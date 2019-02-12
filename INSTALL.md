@@ -8,7 +8,7 @@ see https://ocaml.org/docs/install.fr.html#InstallationviaOPAM (in french)
 
 1. install opam (the Ocaml PAckage Manager) from https://opam.ocaml.org
 
-2. install ocaml using opam
+2. install ocaml using opam with the following commands
    
     - ``opam install ocaml``
     - ``opam install ocamlfind``
