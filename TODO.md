@@ -10,13 +10,15 @@
 
 - Enumération des macros-transitions et les etats labelises 
 
+```Ocaml
+
  par foreach Sigma - {B} (fun l -> MT utilisant l)
 
 let rec (foreach_symbol_in: 'a list -> ('a -> transitions) -> transitions) = fun symbols instrantiate_transitions_with ->
   match symbols with
   | [] -> []
   | s::other_symbols -> union (instrantiate_transitions_with s) (foreach_symbol_in other_symbols instrantiate_transitions_with)
-
+```
 
 ## Simulateur
 
@@ -28,7 +30,7 @@ let rec (foreach_symbol_in: 'a list -> ('a -> transitions) -> transitions) = fun
 
 - la trouche T effectue la traduction de la MT1 en MT2 (binaire) et ajoute la configuration de MT2 `dans la liste de configuration
 
-## DONE
+## Done
 
 - une MT peut avoir plusieurs bandes
 
