@@ -6,9 +6,11 @@
  *
  * USAGE
  *
- *   Require    :  MyList.ml MyString.ml
- *   Compilation:  ocamlc MyList.ml MyString.ml Pretty.ml 
- *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Pretty.cmo 
+ *   Requirement
+ *    - Module  :  MyList.cmo MyString.cmo Tricks.cmo
+ *    - Library :
+ *   Compilation:  ocamlc MyList.cmo MyString.cmo Tricks.cmo Pretty.ml 
+ *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo 
  *
  * DEMO
  *
@@ -57,12 +59,13 @@ let output_in ~(filename:string) ~(content:string) : unit =
 (* INFORMATION *)
 
 let extension: format -> string = fun format ->
-  match format with
-  | Latex -> "tex"
-  | Html  -> "html"
-  | Dot   -> "dot"
-  | Ascii -> "txt"
-
+  let ext =
+    match format with
+    | Latex -> "tex"
+    | Html  -> "html"
+    | Dot   -> "dot"
+    | Ascii -> "txt"
+  in  ("." ^ ext)
 
 (* begin -- DEPRECATED
   let output = get_output()  in ... (format_of output) ...

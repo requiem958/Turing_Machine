@@ -191,14 +191,14 @@ module Demo =
       begin
         print_string "\n\n* DEMO * Bit_Vector.ml:\n\n"
       ;
-        [ (enumerate_from_to 3 16) >> prettys ;
-          (enumerate_x_from (16-3+1) [Bit.unit;Bit.unit;Bit.zero;Bit.zero;Bit.zero]) >> prettys ;
-          (enumerate_x_from 8 (int_to_bits 7)) >> prettys ;
-          (enumerate_x_from 8 (List.map (fun _ -> Bit.zero) (int_to_bits 7))) >> prettys ;
-          (enumerate 8) >> prettys
+        [ (enumerate_from_to 0 16) |> prettys ;
+          (enumerate_x_from 14 [Bit.unit;Bit.unit;Bit.zero;Bit.zero;Bit.zero]) |> prettys ;
+          (enumerate_x_from 8 (int_to_bits 7)) |> prettys ;
+          (enumerate_x_from 8 (List.map (fun _ -> Bit.zero) (int_to_bits 7))) |> prettys ;
+          (enumerate 8) |> prettys
         ]
-        >> (String.concat "\n")
-        >> print_string
+        |> (String.concat "\n")
+        |> print_string
       end
       
 end)

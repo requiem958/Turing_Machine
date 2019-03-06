@@ -9,18 +9,14 @@
  * USAGE
  *
  *   Requirement
- *   - Module   :  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo 
+ *   - Module   :  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo
  *   - Library  :  
- *   Compilation:  ocamlc      MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Action..ml
- *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Action.cmo 
+ *   Compilation:  ocamlc      MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.ml
+ *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.cmo 
  *
- * DEMO
- *
- *   See the Turing Machine project, the Automata project
  *)
 
 
-(* open Tricks *)
 open Symbol
 open Band
 open Pattern
@@ -37,7 +33,7 @@ type moving  = Left | Here | Right
 type action =
   | RWM of (reading * writing * moving)
   | Simultaneous of action list (* simultaneous actions on multiple bands *)
-  | Nop (* no operation, needed by zip *)
+  | Nop (* no operation *)
 
 
       
@@ -89,24 +85,35 @@ module Action =
 
     type t = action
 
-    let (zip: action list -> Band.t list -> (action * Band.t) list) =  Band.zip_complete_with Nop ;;
+    let (assign_action_wrt: indexes -> action list -> Band.t list -> (action * Band.t) list) =  Band.assign_indexed_operation_with_default Nop
 
-    (* ENABLED ACTION *)	
-	
-    let rec (is_enabled_on: Band.t list -> action -> bool) = fun bands action ->
-	  (bands <> [])
-	    &&
-	  (match action with
-	  | Nop -> true
-	  | RWM (Match(pattern),_,_) -> let band = List.hd bands in Pattern.matches pattern band.head		    
-	  | Simultaneous actions ->
-		  List.for_all
-		    (fun (action,band) -> is_enabled_on [band] action)
-		    (zip actions bands)
-	  )
 
+    (* ENABLED ONE ACTION on ONE BAND *)	
+
+    let (is_enabled_on_this: Band.t -> action -> bool) = fun band action ->
+      match action with
+      | Nop -> true
+      | RWM (Match(pattern),_,_) -> Pattern.matches pattern band.head                                  
+
+
+    (* ENABLED COMPLEX ACTION on INDEXED BANDS *)
+                                  
+    let rec (is_enabled_on: indexes -> Band.t list -> action  -> bool) = fun indexes bands action ->
+      (bands <> [])
+      &&
+        (let actions =
+           match action with 
+           | Nop -> []
+           | RWM _ -> [action]
+           | Simultaneous one_band_actions -> one_band_actions
+         in
+         List.for_all
+	   (fun (action,band) -> is_enabled_on_this band action)
+           (assign_action_wrt indexes actions bands) 
+        )
+          
 	    
-    (* PERFORMING AN ACTION *)
+    (* PERFORMING an action on ONE BAND *)
 	    
     let (do_move: moving -> Band.t -> Band.t) = fun moving band ->
 	  match moving with
@@ -123,22 +130,23 @@ module Action =
 	  match action with
 	  | Nop -> band
 	  | RWM (_,writing,moving) -> band |> (do_write writing) |> (do_move moving)
- 	  | Simultaneous [action]  -> perform_on_one_band action band
-
-    let (perform: action -> Band.t list -> Band.t list) = fun action bands ->
-	  match action with
-	  | Nop -> bands
-	  | Simultaneous actions ->
-		  List.map
-		    (fun (action,band) -> perform_on_one_band action band)
-		    (zip actions bands)
-	  | RWM _ ->
-		  (match bands with
-		  | band :: untouched_bands -> (perform_on_one_band action band) :: untouched_bands
-		  | [] -> failwith "Action.perform: missing band"
-		  )
 
 
+    (* PERFORMING INDEXED ACTIONS on MULTIPLE BANDS *)
+                                    
+    let (perform:  action -> indexes -> Band.t list -> Band.t list) = fun action indexes bands ->
+      let actions =
+      	match action with
+	  | Nop -> []
+          | RWM _ -> [action]
+	  | Simultaneous actions -> actions
+      in             
+      List.map
+	(fun (action,band) -> perform_on_one_band action band)
+	(assign_action_wrt indexes actions bands)
+      
+
+                
     (* PRETTY PRINTING *)
 
     let rec (to_ascii: t -> string) = function

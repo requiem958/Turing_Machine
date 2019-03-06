@@ -10,8 +10,8 @@ see https://ocaml.org/docs/install.fr.html#InstallationviaOPAM (in french)
 
 2. install ocaml using opam with the following commands
    
-    - ``opam install ocaml``
-    - ``opam install ocamlfind``
-    - ``opam install ocamlbuild``
-    - ``opam install ledit``
-
+    - ``opam install ocaml``      the Ocaml compiler and interpreter 
+    - ``opam install ocamlfind``  the Ocaml finder of library
+    - ``opam install ocamlbuild`` the Ocaml make 
+    - ``opam install ledit``      then use ``ledit ocaml`` to run the Ocaml interpreter with history
+    - ``opam install tuareg``     the emacs mode for Ocaml

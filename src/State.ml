@@ -1,16 +1,18 @@
 (* Michaël PÉRIN, Verimag / Université Grenoble-Alpes, Février 2017
  *
+ * Part of the project TURING MACHINES FOR REAL
+ *
  * CONTENT 
  *
  *   Representation of the states of a Turing Machine
  *
  * USAGE
  *
- *   Requirement:
- *   - Module   :  MyList.ml MyString.ml Tricks.ml Pretty.ml Color.ml Html.ml Symbol.ml Alphabet.ml
- *   - Library  :  Graphics.cma
- *   Compilation:  ocamlc       MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Alphabet.cmo Graphics.cma State.ml 
- *   Interpreter:  ledit ocaml  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Alphabet.cmo Graphics.cma State.cmo  
+ *   Requirement
+ *   - Module   :  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo
+ *   - Library  :  
+ *   Compilation:  ocamlc      MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo State.ml
+ *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo State.cmo
  *
  * DEMO
  *

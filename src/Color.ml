@@ -9,7 +9,7 @@
  *   Requirement:
  *    - Module  :  MyList.ml MyString.ml Tricks.ml Pretty.ml
  *    - Library :
- *   Compilation:  ocamlc MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.ml 
+ *   Compilation:  ocamlc      MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.ml 
  *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo
  *)
 
@@ -36,7 +36,7 @@ let (rgb_black:  rgb) = (0,0,0)
 let (rgb_blue:   rgb) = (0,0,255)
 let (rgb_cyan:   rgb) = (0,255,255)
 let (rgb_green:  rgb) = (0,255,0)
-let (rgb_gray:   rgb) = (125,125,125)
+let (rgb_gray:   rgb) = (169,169,169)
 let (rgb_indigo: rgb) = (75,0,130)
 let (rgb_magenta:rgb) = (255,0,255)
 let (rgb_orange: rgb) = (229,83,0)
@@ -72,9 +72,9 @@ let (blue:   color) = COL "blue"
 let (yellow: color) = COL "yellow"
 let (red:    color) = COL "red"
 let (green:  color) = COL "green"
-let (gray:   color) = RGB rgb_gray
-let (orange: color) = RGB rgb_orange
-let (indigo: color) = RGB rgb_indigo
+let (gray:   color) = COL "gray"
+let (orange: color) = COL "orange"
+let (indigo: color) = COL "indigo"
 
      
 let (default:color) = black

@@ -52,8 +52,8 @@ let (descriptor: descriptor) = {
 }     
 *)
 
-      
-
+             
+let nil: content = ""       
 
 let concat: content list -> content = String.concat "\n"
     

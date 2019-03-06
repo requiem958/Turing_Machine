@@ -9,17 +9,22 @@
  * USAGE
  *
  *   Requirement
- *    - Module  :  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo
+ *    - Module  :  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo 
  *    - Library :
  *   Compilation:  ocamlc      MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Band.ml
- *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Band.cmo
+ *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Band.cmo 
  *)
 
 open Symbol
 open Alphabet
 
+
+type indexes = int list
+   
 type band =
-   {
+  {
+    name: string ;
+    
     left: Symbol.t list ; head: Symbol.t ; right: Symbol.t list ;
 
     color: Color.t ;
@@ -37,18 +42,19 @@ type band =
      *)
   }
 
+  
 module Band =
   (struct
 
     type t = band
 
-    let (empty: band) = { left = [] ; head = B ; right = [] ; color = Color.COL "LightGray" ; alphabet = Alphabet.empty }
+    let (empty: band) = { name = "" ; left = [] ; head = B ; right = [] ; color = Color.COL "LightGray" ; alphabet = Alphabet.empty }
 
 
-    let (make: Alphabet.t -> symbols -> band) = fun alphabet symbols ->
+    let (make: string -> Alphabet.t -> symbols -> band) = fun name alphabet symbols ->
 	  match symbols with
-	  | []    -> { empty with alphabet = alphabet ; right = [] }
-	  | s::ymbols -> { empty with alphabet = alphabet ; head = s ; right = ymbols }
+	  | []    -> { empty with name = name ; alphabet = alphabet ; right = [] }
+	  | s::ymbols -> { empty with name = name ; alphabet = alphabet ; head = s ; right = ymbols }
 
 
     let (nb_cells: band -> int * int) = fun band -> (List.length band.left, List.length band.right)
@@ -82,19 +88,50 @@ module Band =
     let (translate_to_binary: band -> band) = fun band ->
 	  let map = Binary.create_binary_map band.alphabet
 	  in Binary.translate_using map band
-
-    let rec (zip_complete_with: 'op -> 'op list -> band list -> ('op * band) list) = fun nop operations bands ->
-	  match operations,bands with
-	  | [], [] -> []
-	  | o::operations, b::bands -> (o,b) :: (zip_complete_with nop operations bands)
-	  | [], b::bands -> (nop,b) :: (zip_complete_with nop [] bands)
-	  | _, [] -> failwith "Band.zip: missing band"
-
      *)
+
+        
+    (* ASSIGNMENT of OPERATIONS to BANDS *)    
+        
+    (* This assignement algorithm uses the indexes of active_bands to associate actions to bands and nop to unused bands 
+     * /!\ The ordering of bands must be preserved for futrhter use of List.map on bands
+     *
+     *  For instance,
+     *    assign_wrt NOP [3 ; 1] [action_a ; action_b ] [B1;B2;B3] --> [(action_b,B1) ; (NOP,B2) ; (action_a,B3)]
+     *)
+                                    
+    let assign_indexed_operation_with_default: 'operation -> indexes -> 'operation list -> band list -> ('operation * band) list = fun nop indexes operations bands ->
+      let indexed_operations =
+        MyList.zip indexes operations
+      in List.mapi
+           (fun i band ->
+             let index = i+1 in
+             let operation = try List.assoc index indexed_operations with Not_found -> nop (* no operation *)
+             in (operation,band)
+           )
+           bands
+
+    (* OLD, USELESS ?
+    let rec (zip_complete_with: 'op -> 'op list -> band list -> ('op * band) list) = fun nop operations bands ->
+      match operations,bands with
+      | [], [] -> []
+      | o::operations, b::bands -> (o,b) :: (zip_complete_with nop operations bands)
+      | [], b::bands -> (nop,b) :: (zip_complete_with nop [] bands)
+      | _, [] -> failwith "Band.zip: missing band"
+
+    let (zip_action_band: action list -> Band.t list -> (action * Band.t) list) =  Band.zip_complete_with Nop ;;
+     *)
+
+
+    (* SELECT *)
+
+    let select: indexes -> band list -> band list = fun indexes bands ->
+      List.map (fun i -> List.nth bands i) indexes
+      
 
     (* EQUIVALENCE *)
 
-    let rec (remove_left_blanks: Symbol.t list -> Symbol.t list) = fun symbols ->
+    let rec remove_left_blanks: Symbol.t list -> Symbol.t list = fun symbols ->
 	  match symbols with
 	  | [] -> []
 	  | s::ymbols -> if s=B then remove_left_blanks ymbols else symbols
@@ -106,9 +143,9 @@ module Band =
       |> List.rev
 
     let (symbols_of: band -> Symbol.t list) = fun band ->
-	  let right = remove_right_blanks (band.head :: band.right)
-	  and left  = remove_left_blanks  (List.rev band.left)
-	  in left @ right
+      let right = remove_right_blanks (band.head :: band.right)
+      and left  = remove_left_blanks  (List.rev band.left)
+      in left @ right
 
     let (equivalent: band -> band -> bool) = fun band1 band2 ->
 	  (symbols_of band1) = (symbols_of band2)
@@ -144,21 +181,45 @@ module Band =
 	       [ Html.row [] [ cell_to_html band band.head ] ]
 	    )
 
-    let (to_html: Html.options -> band -> Html.row) = fun options band ->
-	  let cells =
-	    (List.map (cell_to_html band) (List.rev band.left))
-	    @
-	      [ head_to_html band band.head ]
-	    @
-	      (List.map (cell_to_html band) (band.right))
-	  in
-	    Html.row options cells
+    let (name_to_html: band -> Html.cell) = fun band ->
+	  Html.cell []
+	    (Html.table [("bordercolor", Html.Color Color.gray) ; ("border", Html.Int 1) ;  ("cellpadding",Html.Int 4) ]
+	       [Html.row []
+                  [Html.cell
+    	             [("align", Html.Option "center") ]
+                     (Html.font [ ("color", Html.Color Color.gray) ; ("size", Html.Int 2) ] ("&nbsp;&nbsp;" ^band.name ^ "&nbsp;&nbsp;"))
+            ]])
 
-    let (to_html_many: Html.options -> band list -> Html.table) = fun options bands ->
-	  let rows = List.map (to_html []) bands in
-	    Html.table
-	      (options @ [ ("bordercolor", Html.Color Color.white) ; ("cellpadding",Html.Int 1) ; ("cellspacing",Html.Int 0) ; ("border",Html.Int 1) ])
-	      rows
+        
+    let to_html: Html.options -> band -> Html.row = fun options band ->
+      let cells =
+        [ name_to_html band ] 
+        @
+	  (List.map (cell_to_html band) (List.rev band.left))
+	@
+	  [ head_to_html band band.head ]
+	@
+	  (List.map (cell_to_html band) (band.right))
+      in
+      Html.row options cells
+
+    let to_html_many: Html.options -> band list -> indexes -> Html.table = fun options bands active_bands ->
+      let
+        highlight_band: int -> band -> Html.row = fun i ->
+        if List.mem i active_bands
+        then (to_html [])
+        else (to_html [("bgcolor", Html.Color Color.gray)])
+      and
+        focus_on_band: int -> band -> Html.row = fun i band ->
+        if List.mem i active_bands
+        then Html.nil
+        else (to_html [] band)
+      in
+      let rows = List.mapi (fun i -> highlight_band (i+1)) bands
+      in
+      Html.table
+	(options @ [ ("bordercolor", Html.Color Color.white) ; ("cellpadding",Html.Int 1) ; ("cellspacing",Html.Int 1) ; ("border",Html.Int 1) ])
+	rows
 
     (* user *)
 

@@ -13,10 +13,6 @@
  *   Require    :  unix.cma 
  *   Compilation:  ocamlc unix.cma Date.ml
  *   Interpreter:  ledit ocaml unix.cma Date.cmo
- *
- * DEMO
- *
- *   See the Turing Machine project, the Automata project
  *)
 
 

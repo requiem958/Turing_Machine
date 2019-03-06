@@ -9,10 +9,10 @@
  * USAGE
  *
  *   Requirement
- *   - Module   :  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.cmo State.cmo Transition.cmo
+ *   - Module   :  MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.cmo State.cmo Band.cmo Transition.cmo 
  *   - Library  :  
- *   Compilation:  ocamlc      MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.cmo State.cmo Transition.cmo Turing_Machine.ml
- *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.cmo State.cmo Transition.cmo Turing_Machine.cmo 
+ *   Compilation:  ocamlc      MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.cmo State.cmo Band.cmo Transition.cmo Turing_Machine.ml
+ *   Interpreter:  ledit ocaml MyList.cmo MyString.cmo Tricks.cmo Pretty.cmo Color.cmo Html.cmo Symbol.cmo Bit_Vector.cmo Alphabet.cmo Pattern.cmo Band.cmo Action.cmo State.cmo Band.cmo Transition.cmo Turing_Machine.cmo 
  *
  *)
 
@@ -27,21 +27,27 @@ open Html
 open Pretty
 
 
+(* TODO: put the modules Transition and Instruction from Transition.ml here *)
+   
 module Turing_Machine =
   (struct
     
-    type t = turing_machine
+    type t = turing_machine 
 	   
     let (nop: t) = { name = "" ;
-		     nb_bands = 1 ;
+		     nb_bands = 1 ; (* TO BE REMOVED *)
+                     active_bands = [1] ;
 		     initial = State.initial ;
                      accept  = State.accept  ;
                      reject  = State.reject  ;
 		     transitions = [ (State.initial, Action(Nop), State.accept) ]
 		   }
-	
-    let finalize: string -> turing_machine -> turing_machine = fun name tm ->
-	  { tm with name = name }
+
+    let operates_on: Band.indexes -> turing_machine -> turing_machine = fun indexes tm ->
+      { tm with active_bands = indexes }
+
+    let naming: string -> turing_machine -> turing_machine = fun name tm ->
+      { tm with name = name }
 
     let sequence: Instruction.t list -> turing_machine = fun instructions ->
       let init = nop.initial and accept = nop.accept in
@@ -86,8 +92,8 @@ module Turing_Machine =
 
     (* FIXME i_store is a better name *)
 	                  
-    let i_make: string -> turing_machine -> turing_machine = fun name turing_machine ->
-      let tm = finalize name turing_machine in
+    let i_store: string -> turing_machine -> turing_machine = fun name turing_machine ->
+      let tm = naming name turing_machine in
       begin
 	global_TM_library#add tm ;
 	tm

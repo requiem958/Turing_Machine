@@ -226,7 +226,7 @@ struct
 
   (* TRANSLATION OF BANDS *)
 
-  (** NEW 27/03/2107 *)
+  (* USED? 
   module BD : Bit_Vector.Two_Values_Sig =
   struct
     type t = symbol
@@ -234,15 +234,17 @@ struct
     let unit : t = D
     let pretty : t -> string = Symbol.pretty
   end
-
+   *)
+  
   (* modules Bit and Bits are defined in Alphabet.ml *)
 
-  type encoding = (Symbol.t * Bits.t) list
+  type encoding = (Symbol.t * Alphabet.Bits.t) list
 
   let build_encoding : Alphabet.t -> encoding = fun alphabet ->
-      let symbol_to_bits : Symbol.t -> Bits.t = fun symbol -> [ Bit.zero ; Bit.unit ]
-      in
-      List.map (fun symbol -> (symbol, symbol_to_bits symbol)) alphabet.symbols
+    let symbol_to_bits : Symbol.t -> Bits.t = fun symbol ->
+      [ Bit.zero ; Bit.unit ]
+    in
+    List.map (fun symbol -> (symbol, symbol_to_bits symbol)) alphabet.symbols
 
   let encode_with : encoding -> Band.t list -> Band.t list = fun encoding bands ->
     List.map (Band.map (function U -> S | Z -> D)) bands 

@@ -4,10 +4,10 @@
  *
  * CONTENTS 
  *
- *   - The alphabet of symbols used by a Turing Machine
- *   - Its conversion into vectors of bits for Turing Machines which operate on binary alphabet {B,D} 
+ *   - the set of symbols used by Turing Machines:  baton, binary, full.
+ *   - Its conversion into vectors of bits for Turing Machines that operate on binary alphabet 
  *     
- *     FIXME 2019: why not {Z,U} + Blank ?
+ *     FIXME 2019: binary alphabet {B,D} = why not {Z,U} + Blank ?
  *     IMPORTANT : The default symbol of the band (the blank symbol B) must be one of the two bits
  *               I chose  B <-> 0 , D <-> 1
  *
@@ -29,15 +29,16 @@ open Symbol
 
 
 module Bit =
-struct
-  type t = symbol
-  let zero :t = B
-  let unit :t = D
-  let pretty : t -> string = Symbol.pretty
-end
+  struct
+    type t = symbol
+    let zero :t = B
+    let unit :t = D
+    let pretty : t -> string = Symbol.pretty
+  end
 
 module Bits = Bit_Vector.Made_Of(Bit)
 
+            
 
 type alphabet = { symbols: symbols ;
                   symbol_size_in_bits: int }
