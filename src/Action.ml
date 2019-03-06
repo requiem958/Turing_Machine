@@ -85,9 +85,15 @@ module Action =
 
     type t = action
 
-    let (assign_action_wrt: indexes -> action list -> Band.t list -> (action * Band.t) list) =  Band.assign_indexed_operation_with_default Nop
+    let zip: action list -> Band.t list -> (action * Band.t) list =  Band.zip_complete_with Nop ;;
+    
+    (* USELESS
+    let assign_action_wrt: Band.indexes -> action list -> Band.t list -> (action * Band.t) list =  Band.assign_indexed_operation_with_default Nop
 
-
+    let select: Band.indexes -> band list -> band list = fun indexes bands ->
+      List.map (fun i -> List.nth bands i) indexes
+     *)
+    
     (* ENABLED ONE ACTION on ONE BAND *)	
 
     let (is_enabled_on_this: Band.t -> action -> bool) = fun band action ->
@@ -96,20 +102,20 @@ module Action =
       | RWM (Match(pattern),_,_) -> Pattern.matches pattern band.head                                  
 
 
-    (* ENABLED COMPLEX ACTION on INDEXED BANDS *)
+    (* ENABLED COMPLEX ACTION on MULTIPLE BANDS *)
                                   
-    let rec (is_enabled_on: indexes -> Band.t list -> action  -> bool) = fun indexes bands action ->
+    let rec (is_enabled_on: Band.t list -> action  -> bool) = fun bands action ->
       (bands <> [])
       &&
         (let actions =
            match action with 
            | Nop -> []
            | RWM _ -> [action]
-           | Simultaneous one_band_actions -> one_band_actions
+           | Simultaneous actions -> actions (* one-band actions *)
          in
          List.for_all
 	   (fun (action,band) -> is_enabled_on_this band action)
-           (assign_action_wrt indexes actions bands) 
+           (zip actions bands) 
         )
           
 	    
@@ -134,7 +140,7 @@ module Action =
 
     (* PERFORMING INDEXED ACTIONS on MULTIPLE BANDS *)
                                     
-    let (perform:  action -> indexes -> Band.t list -> Band.t list) = fun action indexes bands ->
+    let (perform:  action -> Band.t list -> Band.t list) = fun action bands ->
       let actions =
       	match action with
 	  | Nop -> []
@@ -143,7 +149,7 @@ module Action =
       in             
       List.map
 	(fun (action,band) -> perform_on_one_band action band)
-	(assign_action_wrt indexes actions bands)
+	(zip actions bands)
       
 
                 

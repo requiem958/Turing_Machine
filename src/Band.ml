@@ -18,17 +18,12 @@
 open Symbol
 open Alphabet
 
-
-type indexes = int list
    
 type band =
-  {
-    name: string ;
-    
-    left: Symbol.t list ; head: Symbol.t ; right: Symbol.t list ;
-
-    color: Color.t ;
-
+  { id      : int ;
+    name    : string ;
+    left    : Symbol.t list ; head: Symbol.t ; right: Symbol.t list ;
+    color   : Color.t ;
     alphabet: Alphabet.t
 
     (* 
@@ -47,8 +42,9 @@ module Band =
   (struct
 
     type t = band
-
-    let (empty: band) = { name = "" ; left = [] ; head = B ; right = [] ; color = Color.COL "LightGray" ; alphabet = Alphabet.empty }
+    type indexes = int list
+                 
+    let (empty: band) = { id = 1 ; name = "" ; left = [] ; head = B ; right = [] ; color = Color.COL "LightGray" ; alphabet = Alphabet.empty }
 
 
     let (make: string -> Alphabet.t -> symbols -> band) = fun name alphabet symbols ->
@@ -91,27 +87,31 @@ module Band =
      *)
 
         
-    (* ASSIGNMENT of OPERATIONS to BANDS *)    
-        
-    (* This assignement algorithm uses the indexes of active_bands to associate actions to bands and nop to unused bands 
-     * /!\ The ordering of bands must be preserved for futrhter use of List.map on bands
-     *
-     *  For instance,
-     *    assign_wrt NOP [3 ; 1] [action_a ; action_b ] [B1;B2;B3] --> [(action_b,B1) ; (NOP,B2) ; (action_a,B3)]
-     *)
-                                    
-    let assign_indexed_operation_with_default: 'operation -> indexes -> 'operation list -> band list -> ('operation * band) list = fun nop indexes operations bands ->
-      let indexed_operations =
-        MyList.zip indexes operations
-      in List.mapi
-           (fun i band ->
-             let index = i+1 in
-             let operation = try List.assoc index indexed_operations with Not_found -> nop (* no operation *)
-             in (operation,band)
-           )
-           bands
+    (** SELECTION of BANDS *)
+      
+    let foreach_i: (int -> 't -> 'a list) -> 't list -> 'a list = fun f ts ->
+      let rec rec_foreach_i_f: int -> 't list -> 'a list = fun i ts ->
+        match ts with
+        | [] -> []
+        | t_i::others -> (f i t_i) @ (rec_foreach_i_f (i+1) others)
+      in rec_foreach_i_f 0 ts
 
-    (* OLD, USELESS ?
+    (* split_wrt [4;2] [B1;B2;B3;B4]  --> ( [B4;B2] , [B1;B3] )
+     *  is used by the instruction Run_on([4;2],TM). Hence, TM runs on (B4,B2) considering B4 as its first band and B2 as its second band.
+     *)
+       
+    let split_wrt: indexes -> band list -> band list * band list = fun indexes bands ->
+      let selected_bands = List.map (fun index -> let i = index-1 in List.nth bands i) indexes
+      and other_bands = foreach_i (fun i band -> let index = i+1 in if List.mem index indexes then [] else [band]) bands
+      in (selected_bands,other_bands)
+
+       
+    let sort: band list -> band list = List.sort (fun band band' -> Pervasives.compare band.id band'.id) ;;
+      
+    let sorted_union: band list -> band list -> band list = fun modified_band unmodified_bands -> sort (modified_band @ unmodified_bands)
+      
+    let join: band list -> band list -> band list = sorted_union ;;
+
     let rec (zip_complete_with: 'op -> 'op list -> band list -> ('op * band) list) = fun nop operations bands ->
       match operations,bands with
       | [], [] -> []
@@ -119,15 +119,7 @@ module Band =
       | [], b::bands -> (nop,b) :: (zip_complete_with nop [] bands)
       | _, [] -> failwith "Band.zip: missing band"
 
-    let (zip_action_band: action list -> Band.t list -> (action * Band.t) list) =  Band.zip_complete_with Nop ;;
-     *)
-
-
-    (* SELECT *)
-
-    let select: indexes -> band list -> band list = fun indexes bands ->
-      List.map (fun i -> List.nth bands i) indexes
-      
+     
 
     (* EQUIVALENCE *)
 
@@ -203,19 +195,9 @@ module Band =
       in
       Html.row options cells
 
-    let to_html_many: Html.options -> band list -> indexes -> Html.table = fun options bands active_bands ->
-      let
-        highlight_band: int -> band -> Html.row = fun i ->
-        if List.mem i active_bands
-        then (to_html [])
-        else (to_html [("bgcolor", Html.Color Color.gray)])
-      and
-        focus_on_band: int -> band -> Html.row = fun i band ->
-        if List.mem i active_bands
-        then Html.nil
-        else (to_html [] band)
-      in
-      let rows = List.mapi (fun i -> highlight_band (i+1)) bands
+      
+    let to_html_many: Html.options -> band list -> Html.table = fun options bands ->
+      let rows = List.map (to_html []) bands
       in
       Html.table
 	(options @ [ ("bordercolor", Html.Color Color.white) ; ("cellpadding",Html.Int 1) ; ("cellspacing",Html.Int 1) ; ("border",Html.Int 1) ])

@@ -18,6 +18,7 @@
 
  
 open Alphabet
+open Band   
 open State
 open Pattern
 open Symbol
@@ -35,16 +36,13 @@ module Turing_Machine =
     type t = turing_machine 
 	   
     let (nop: t) = { name = "" ;
-		     nb_bands = 1 ; (* TO BE REMOVED *)
-                     active_bands = [1] ;
+		     nb_bands = 1 ; 
+                     (* active_bands = [1] ; *)
 		     initial = State.initial ;
                      accept  = State.accept  ;
                      reject  = State.reject  ;
 		     transitions = [ (State.initial, Action(Nop), State.accept) ]
 		   }
-
-    let operates_on: Band.indexes -> turing_machine -> turing_machine = fun indexes tm ->
-      { tm with active_bands = indexes }
 
     let naming: string -> turing_machine -> turing_machine = fun name tm ->
       { tm with name = name }

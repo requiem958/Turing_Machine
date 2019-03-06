@@ -1,6 +1,6 @@
 # TODO
 
-## Application d'une MT multi-bandes à un sous-ensemble de bandes
+## DONE but NOT TESTED: Application d'une MT multi-bandes à un sous-ensemble de bandes
 
 - Introduire une action Run_on of band list * TM.
   Application: Run_on([4;2], Copy) qui recopie la bande 4 sur la bande 2 sans modifier la bande 1 ni la 3

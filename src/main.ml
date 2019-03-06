@@ -2,7 +2,7 @@
  *
  * Part of the project TURING MACHINES FOR REAL
  *
- * - Calls the demo functions of each interesting module
+ * - calls the demo function of each interesting module
  *
  *)
 
@@ -12,9 +12,9 @@
 let _ = Demo.demo () 
 
 (*      
-let _ = LC_by_MT.demo ()       
+        let _ = LC_by_MT.demo ()       
 
-let _ = Emulator.demo ()  
+        let _ = Emulator.demo ()  
        
-let _ = Exercise.demo() 
+       let _ = Exercise.demo() 
  *)

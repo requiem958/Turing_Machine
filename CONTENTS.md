@@ -2,7 +2,7 @@
 
 lib/
 
-- `Date.ml` : print Unix time
+- `Date.ml` : provides Unix time in a human-readable format
 
 - `MyList.ml` : Extension of the List module with additional functions
 
@@ -26,47 +26,46 @@ lib/
     - any symbols OUT of a list of symbols
 
 
+src/ 
 
-
-Each module contains a demo function called `demo()`
+Each module containts a demo function called `demo()` (sometimes it is defined in a Demo module)
 
 - `main.ml` : calls the demo functions of each interesting module
 
 - `Symbol.ml` : Symbols of the alphabet used by Turing Machines
 
-- FIXME `Alpahbet.ml` : defines the set of symbols used by a Turing Machines:  baton, binary, full.
-     and the conversion into vectors of bits for Turing Machines that operate on binary alphabet.
+- FIXME `Alphabet.ml` : defines the set of symbols used by a Turing Machines:  baton, binary, full
+     and the conversion of symboles into vectors of bits for Turing Machines that operate on binary alphabet.
 
 - `State.ml` : Representation of the states of a Turing Machine
 
 
-- FIXME `Band.ml` : representation of Bands of Turing Machines
+- FIXME `Band.ml` : Representation of Bands of Turing Machines
 
      The alphabet is needed for translation into a binary representation of the symbols.
      The alphabet is associated with the band (instead of being associated with the TM) for two reasons:
-       1. outside the execution of a TM on the band, we would not know the alphabet and we would not be able to perform translation
-       2. we will apply several TM in sequence on the band so they should agree and exchange the alphabet: that's complicated...
-       3. Some of these TM can be generic, meaning that their instanciations depends on the alphabet
+     
+     1. outside the execution of a TM on the band, we would not know the alphabet and we would not be able to perform translation
+     2. we will apply several TM in sequence on the band so they should agree and exchange the alphabet: that's complicated...
+     3. Some of these TM can be generic, meaning that their instanciations depends on the alphabet
+     
      Thus, it seems more convenient that the band sets the alphabet at creation.
 
     FIXME 2019 : Translation to binary : TODO in module Emulator.ml using module Binary
 
-- `Action.ml` : basic actions of a Turing Machine
+- `Action.ml` : Basic actions of a Turing Machine
 
 - `Transition.ml` :  Transitions of Turing Machines
 
-- `Turing_Machine.ml` : definition of Turing Machines
+- `Turing_Machine.ml` : Representation of Turing Machines
 
 - `Execution.ml` : I'M HERE
 
-- FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers which can simulate the action of a TM operating on an alphabet ALPHA
-                        by a Turing Machine operating on bit-vectors encoding the symbols of ALPHA.
-
-
+- FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
+    - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
 
 ? simulator/
 
-Analyse du cycle de vie d’un smartphone sur 2 et 5 ans
 
 
 Turing_Machines/
@@ -75,7 +74,7 @@ Turing_Machines/
 
  - `TM_2Bands.ml` : A collection of Two-Bands Turing Machines
 
- - `TM_Busy_Beaver.ml` : The busy beavers BB4,BB5,BB6
+ - `TM_Busy_Beaver.ml` : The busy beavers BB4, BB5, BB6
 
 
 Language/
@@ -83,9 +82,9 @@ Language/
 
 Lambda_Calculus/
 
-  - `Lambda_Calcul.ml` : lambda terms, reduction with tracing of beta-reduction
+  - `Lambda_Calcul.ml` : defines lambda terms, reduction with tracing of beta-reduction (no dependency with Turing Machine)
 
-  - `TM_substituation.ml` : part of the sub-project LAMBDA-CALCULUS SIMULATED BY TURING MACHINES: substitution
+  - `TM_substitution.ml` : part of the project Lambda-Calculus Simulated by Turing Machines
 
   - `LC_by_TM.ml` : main 
 
