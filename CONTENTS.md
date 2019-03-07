@@ -1,6 +1,7 @@
-# Contents
+Contents
+========
 
-lib/
+## lib/
 
 - `Date.ml` : provides Unix time in a human-readable format
 
@@ -26,7 +27,7 @@ lib/
     - any symbols OUT of a list of symbols
 
 
-src/ 
+## src/ 
 
 Each module containts a demo function called `demo()` (sometimes it is defined in a Demo module)
 
@@ -59,14 +60,10 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
 
 - `Execution.ml` : I'M HERE
 
-- FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
-    - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
-
-? simulator/
 
 
 
-Turing_Machines/
+### Turing_Machines/
 
  - `TM_Basic.ml` : A collection of Basic Turing Machines
 
@@ -75,10 +72,7 @@ Turing_Machines/
  - `TM_Busy_Beaver.ml` : The busy beavers BB4, BB5, BB6
 
 
-Language/
-
-
-Lambda_Calculus/
+### Lambda_Calculus/
 
   - `Lambda_Calcul.ml` : defines lambda terms, reduction with tracing of beta-reduction (no dependency with Turing Machine)
 
@@ -86,5 +80,14 @@ Lambda_Calculus/
 
   - `LC_by_TM.ml` : main 
 
-Universal/
+
+### Universal/ PROJET 2019
+
+
+### Simulator/ PROJET 2017
+
+- FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
+    - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
+
+
 
