@@ -23,11 +23,12 @@ type symbol =
 
   | U (* the 1 bit *)
   | Z (* the 0 bit *)
+
   | S (* a separator *)
 
-  (* additional symbols for simulating the beta-reducton with MT : REQUIRED by LC_by_MT *)
+  (* LAMBDA-CALCULUS: additional symbols for simulating the beta-reducton with MT, required by LC_by_MT *)
 
-  | L (* lambda *)
+ (* L    lambda *)
   | O (* the opening parenthesis *)
   | C (* the closing parenthesis *)
   | X (* the variable symbol followed by a identifier as a sequence of bits *)
@@ -41,6 +42,20 @@ type symbol =
   (* For simulation of a k-Bands Turing Machine by a One-Band Turing Machine *)
 
   | Column of symbols
+
+                (* UNIVERSAL TURING MACHINE: see Universal/UTM.ml *)
+            
+  | Std  (* standard state *)
+  | Acc  (* accepting state *)
+  | Exc  (* exception state *)
+
+  | L    (* Left  move *)
+  | H    (* Here  move *)
+  | R    (* Right move *)
+
+  
+  
+ 
 
 and symbols = symbol list
 
@@ -62,22 +77,33 @@ module Symbol =
         | U -> "U"
         | Z -> "Z"
         | S -> "S"
+
         | L -> "L"
         | O -> "O"
         | C -> "C"
         | X -> "X"
+
         | V(string,int) -> String.concat "" [ "V" ; Pretty.parentheses (string ^ "," ^ (string_of_int int)) ]
         | Vector symbols  -> String.concat "" [ "Vector" ; Pretty.bracket (String.concat ";" (List.map verbatim symbols)) ]
         | Column symbols  -> String.concat "" [ "Column" ; Pretty.bracket (String.concat ";" (List.map verbatim symbols)) ]
 
+        | Std -> "Std"
+        | Acc -> "Acc"
+        | Exc -> "Exc"
+        | H -> "H"
+        | R -> "R"
+          
+                           
     (* ascii output *)
 
     let rec to_ascii : symbol -> string
       = function
         | B -> "_"
+        | D -> "$"
+
         | U -> "U"
         | Z -> "Z"
-        | D -> "$"
+
         | S -> "#"
 
         | L -> "L"
@@ -90,6 +116,8 @@ module Symbol =
 
         | Column symbols -> Pretty.bracket (String.concat "|" (List.map to_ascii symbols))
 
+        | symbol -> verbatim symbol
+        
 
     (* html output *)
 
@@ -100,7 +128,7 @@ module Symbol =
         | Z -> (Color.blue  , Color.yellow)
         | U -> (Color.yellow, Color.blue)
         | D -> (Color.black , Color.black)
-        | S -> (Color.red   , Color.red)
+        | S -> (Color.red   , Color.white)
         | _ -> (Color.white , Color.black)
 
     let ft_color : symbol -> Color.t = fun symbol -> snd (color symbol)

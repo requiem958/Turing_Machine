@@ -46,8 +46,7 @@ module Band =
                  
     let (empty: band) = { id = 1 ; name = "" ; left = [] ; head = B ; right = [] ; color = Color.COL "LightGray" ; alphabet = Alphabet.empty }
 
-
-    let (make: string -> Alphabet.t -> symbols -> band) = fun name alphabet symbols ->
+    let make: string -> Alphabet.t -> symbols -> band = fun name alphabet symbols ->
 	  match symbols with
 	  | []    -> { empty with name = name ; alphabet = alphabet ; right = [] }
 	  | s::ymbols -> { empty with name = name ; alphabet = alphabet ; head = s ; right = ymbols }

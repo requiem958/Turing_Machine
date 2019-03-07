@@ -40,8 +40,7 @@ module Bits = Bit_Vector.Made_Of(Bit)
 
             
 
-type alphabet = { symbols: symbols ;
-                  symbol_size_in_bits: int }
+type alphabet = { symbols: symbols ; symbol_size_in_bits: int }
 
 module Alphabet =
   (struct
@@ -65,7 +64,9 @@ module Alphabet =
                          
     let binary : alphabet = make [Bit.zero ; Bit.unit]
 
-    let full : alphabet = make [D;U;Z;S;L;O;C;X]
+    let lambda : alphabet = make [D;U;Z;S;L;O;C;X]
+
+    let utm : alphabet = make [ Std;Acc;Exc;S; Z;U; L;H;R ]
 
 
   end)
