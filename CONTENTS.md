@@ -55,9 +55,7 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
 
 - `Action.ml` : Basic actions of a Turing Machine
 
-- `Transition.ml` :  Transitions of Turing Machines
-
-- `Turing_Machine.ml` : Representation of Turing Machines
+- `Turing_Machine.ml` : Representation of Turing Machines as a list of Transitions
 
 - `Execution.ml` : I'M HERE
 

@@ -1,5 +1,8 @@
 # TODO
 
+## EN COURS : Restructuration : Fusionner Transition + Instruction + Turing_Machine
+
+
 ## DONE but NOT TESTED: Application d'une MT multi-bandes à un sous-ensemble de bandes
 
 - Introduire une action Run_on of band list * TM.
