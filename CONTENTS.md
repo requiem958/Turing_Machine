@@ -52,7 +52,7 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
      
      Thus, it seems more convenient that the band sets the alphabet at creation.
 
-    FIXME 2019 : Translation to binary : TODO in module Emulator.ml using module Binary
+     FIXME 2019: Translation to binary should be done in module Emulator.ml using module Binary
 
 - `Action.ml` : Basic actions of a Turing Machine
 
@@ -63,16 +63,16 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
 
 
 
-### Turing_Machines/
+### src/Turing_Machines/
 
- - `TM_Basic.ml` : A collection of Basic Turing Machines
+ - `TM_Basic.ml` : A collection of Basic Standard Turing Machines
 
  - `TM_2Bands.ml` : A collection of Two-Bands Turing Machines
 
  - `TM_Busy_Beaver.ml` : The busy beavers BB4, BB5, BB6
 
 
-### Lambda_Calculus/
+### src/Lambda_Calculus/
 
   - `Lambda_Calcul.ml` : defines lambda terms, reduction with tracing of beta-reduction (no dependency with Turing Machine)
 
@@ -81,10 +81,11 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
   - `LC_by_TM.ml` : main 
 
 
-### Universal/ PROJET 2019
+### src/Universal/ PROJET 2019
 
 
-### Simulator/ PROJET 2017
+
+### src/Simulator/ PROJET 2017
 
 - FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
     - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.

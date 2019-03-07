@@ -2,21 +2,21 @@ TODO
 ====
 
 
+## src/Simulator/ PROJET 2017
+
+- FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
+    - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
+
+
 ## Language/
 
-- reconnaissance de langage classique
+- reconnaissance de langages classiques
 
 ## Algo/
 
 - réalisation de pi: Nat -> Nat : n -> la nième décimale de \pi
 - réalisation du crible d'Erathostène
 
-
-## Affichage
-
-- afficher un pas en plusieurs temps : lecture = configuration precedente ; ecriture ; deplacement
-- afficher le nom de la MT en cours d'execution
-- afficher l'etat courant : sous quelle forme ? nombre = /!\ taille des fontes OU couleurs = comment les choisir ? OU les deux.
 
 ## Compilation 
 
@@ -55,6 +55,15 @@ Pour permettre cela il faut
 - sélectionner les bandes [4;2] parmi les bandes [ B1,B2,B3,B4 ]
 - appliquer la TM Copy à deux bandes vues comme (B'1=B4, B'2=B2) -TM COpy -> (B'1m=B4m,B'2m=B2m)  les versions modifiées
 - reconstruire la configuration globale [B1,B2m,B3,B4m] à la fin de l'exécution de TM copy en se basant sur le Band.id de chaque bande.
+
+
+## Affichage
+
+- afficher un pas en plusieurs temps : lecture = configuration precedente ; ecriture ; deplacement (cf. Emulator)
+- afficher le nom de la MT en cours d'execution
+- afficher le nom de la bande
+- afficher l'etat courant : sous quelle forme ? nombre = /!\ taille des fontes OU couleurs = comment les choisir ? OU les deux.
+
 
 ### Divers
 
