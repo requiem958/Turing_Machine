@@ -64,10 +64,11 @@ module Alphabet =
                          
     let binary : alphabet = make [Bit.zero ; Bit.unit]
 
+    let zero_unit : alphabet = make [Z;U]
+                             
+    let utm : alphabet = make [ O;Std;Acc;Exc;C; Z;U; L;H;R ]
+
     let lambda : alphabet = make [D;U;Z;S;L;O;C;X]
-
-    let utm : alphabet = make [ Std;Acc;Exc;S; Z;U; L;H;R ]
-
 
   end)
 
