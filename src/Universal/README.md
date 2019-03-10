@@ -34,4 +34,7 @@
 3. Donnez le code des machines `incr` et `decr`
 4. Utilisez le simulateur pour tester votre machine universelle avec les trois machines fournies : `neg`, `incr` et `decr`
 5. Préparez pour la soutenance de (5 minutes) une fonction `démo()` qui montre le bon fonctionnement de votre machine universelle 
+6. Indiquez les noms et prénoms des étudiants de votre groupe dans le fichier `UTM.ml`
+7. Envoyez votre fichier `UTM.ml` par email à Michael Perin avec le titre `[MCAL] Projet 2019 : noms des <étudiants du groupe>`
+7
 
