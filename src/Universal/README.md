@@ -17,7 +17,7 @@
 ## Travail à réaliser par groupe de 4 étudiants
 
 1. Relisez le chapitre 6 du [cours](http://www-verimag.imag.fr/~perin/enseignement/L3/mcal/cours/MCAL-MT-CM-a-trous.pdf)
-2. Complétez la définition de la machine universelle `utm` dans le fichier  `UTM.ml`
+2. Complétez la définition de la machine universelle `utm` dans le fichier [UTM.ml](src/Universal/UTM.ml)
 
    *utm(m,w)* est un interpréteur qui exécute le code de la machine *m* sur le mot d'entrée *w*.
    
