@@ -71,6 +71,9 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
 
  - `TM_Busy_Beaver.ml` : The busy beavers BB4, BB5, BB6
 
+### src/Universal/
+
+  - `UTM.ml` : The Universal Turing Machine as 3-band Turing Machine (PROJET 2019)
 
 ### src/Lambda_Calculus/
 
@@ -81,11 +84,7 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
   - `LC_by_TM.ml` : main 
 
 
-### src/Universal/ PROJET 2019
-
-
-
-### src/Simulator/ PROJET 2017
+### src/Simulator/
 
 - FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
     - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
