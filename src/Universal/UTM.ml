@@ -2,9 +2,9 @@
  *
  * Part of the project TURING MACHINES FOR REAL
  *
- * CONTENT (PROJECT 2019)
+ * CONTENT 
  *
- *   Realisation of the Universal Turing Machine as a Multiple-Bands TM
+ *   Realisation of the Universal Turing Machine as a 3-Bands TM (PROJECT 2019)
  *
  *)
 
@@ -80,7 +80,7 @@ let incr_TM: Turing_Machine.t =
 (**** The named "code" of the previous TM *)
   
 let incr_code: machine_code =
-  let code = [ (* ... *) ]
+  let code = [ (* ... à compléter ... *) ]
   in
   ("m_incr", code)
 
@@ -116,7 +116,7 @@ let decr_TM: Turing_Machine.t =
 (**** The "code" of the previous TM written on one band *)
   
 let decr_code: machine_code =
-  let code = [ (* ... *) ]
+  let code = [ (* ... à compléter ... *) ]
   in  ("m_decr", code)
 
     
@@ -149,7 +149,7 @@ let utm: Turing_Machine.t =
         [
           (init, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; RWM(Match ANY, Write C, Right)]), std1) ;
           (std1, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ], accept)
-          (* ... *)
+          (* ... à compléter ... *)
         ]
   }
 
@@ -187,5 +187,6 @@ let demo: unit -> unit = fun () ->
     List.iter (fun _ -> ())
       [ run_TM_on neg_TM [U;Z;Z;U] ;
         run_UTM_on neg_code [U;Z;Z;U] ;
+        (* ... à compléter ... *)
       ]
   end
