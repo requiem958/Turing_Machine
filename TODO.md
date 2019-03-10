@@ -4,9 +4,11 @@ TODO
 
 ## src/Simulator/ PROJET 2017
 
-- FIXME `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
+- **FIXME** `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
     - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
 
+
+## Simulation d'une MT multi-bandes par une MT standard
 
 ## Language/
 
