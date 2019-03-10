@@ -6,7 +6,7 @@
 
 ## Installation
 
-1. Récupérez le projet : cliquez sur `clone` et choississez `https`
+1. Récupérez le projet **Turing_Machine** : cliquez sur `clone` et choississez `https`
 2. Installez Ocaml : voir [INSTALL.md](../../INSTALL.md)
 3. Testez votre installation à l'aide des commandes suivantes
    - `cd src/` puis `make play` qui lance l'interprète ocaml dans un terminal
