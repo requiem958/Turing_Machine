@@ -89,10 +89,3 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
   - `TM_substitution.ml` : part of the project Lambda-Calculus Simulated by Turing Machines
 
 
-### src/Simulator/
-
-- **FIXME** `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
-    - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
-
-
-
