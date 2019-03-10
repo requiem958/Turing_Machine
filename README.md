@@ -2,4 +2,4 @@
 
 Michael PÉRIN, Verimag / Univ. Grenoble-Alpes
 
-## [Project 2019](projet2019/README.md) : Réalisation d'une Machine de Turing Universelle
+## Projet 2019 : Réalisation d'une Machine de Turing Universelle ([sujet](projet2019/README.md))
