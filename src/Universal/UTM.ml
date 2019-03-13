@@ -9,6 +9,18 @@
  *)
 
 
+(* PROJET 2019 
+ *
+ * Contributeurs 
+ *
+ * NOM Prénom :
+ * NOM Prénom :
+ * NOM Prénom :
+ * NOM Prénom :
+ *
+ *)
+
+
 open Symbol
 open Alphabet
 open Band

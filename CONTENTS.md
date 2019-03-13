@@ -26,8 +26,7 @@ Contents
     - any symbols IN  a list of symbols
     - any symbols OUT of a list of symbols
 
-
-## [src/](src/) 
+## make/
 
 - `Makefile` : Here are the possible commands:
    - make cmo ...... produces .cmo files. This command is used by
@@ -35,6 +34,10 @@ Contents
    - make play ..... load the .cmo files in the ocaml interpreter. Type #use "main.ml";;  in the interpreter to execute the main function.
    - make clean .... delete compilation files
  
+## [src/](src/) 
+
+- `Makefile` : symbolic link toward `../make/Makefile`    
+
 Each module containts a demo function called `demo()` (sometimes it is defined in a Demo module)
 
 - `main.ml` : calls the demo functions of each interesting module

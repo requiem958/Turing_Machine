@@ -6,7 +6,7 @@
 
 ## Installation
 
-1. Récupérez le projet : cliquez sur `clone` et choississez `https`
+1. Récupérez le projet **Turing_Machine** : cliquez sur `clone` et choississez `https`
 2. Installez Ocaml : voir [INSTALL.md](../../INSTALL.md)
 3. Testez votre installation à l'aide des commandes suivantes
    - `cd src/` puis `make play` qui lance l'interprète ocaml dans un terminal
@@ -34,4 +34,7 @@
 3. Donnez le code des machines `incr` et `decr`
 4. Utilisez le simulateur pour tester votre machine universelle avec les trois machines fournies : `neg`, `incr` et `decr`
 5. Préparez pour la soutenance de (5 minutes) une fonction `démo()` qui montre le bon fonctionnement de votre machine universelle 
+6. Indiquez les noms et prénoms des étudiants de votre groupe dans le fichier `UTM.ml`
+7. Envoyez votre fichier `UTM.ml` par email à Michael Perin avec le titre `[MCAL] Projet 2019 : noms des <étudiants du groupe>`
+7
 
