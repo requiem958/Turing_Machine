@@ -59,12 +59,12 @@ type simulators = simulator list
     - STM is executed on SBands until completion
     - The modified SBdans are translated back to OBands using the decoder
 
-    The composition of emulator is allowed. For instance, a simulation using [ emulator1 ; emulator2 ] will lead
+    The composition of emulators is allowed. For instance, a simulation using [ emulator1 ; emulator2 ] will lead
     
-    (q0)-a->(q1) ==emulator1==> TM: (q0) -a_1-> (q') -a_2-> (q1)  which is executed step by step
+    (q0)-a->(q1) ==emulator1==> TM': (q0) -a_1-> (q') -a_2-> (q1)  which is executed step by step
 
-    then (q0) -a_1-> (q') ==emulator2==> TM: (q1) -a_1_1-> (q'') -a_1_2 ->(q')  which is executed
-    then (q') -a_2-> (q1) ==emulator2==> TM: (q') -a_2_1-> (q'') -a_2_2 ->(q1)  which is executed. 
+    then (q0) -a_1-> (q') from TM' ==emulator2==> TM'': (q1) -a_1_1-> (q'') -a_1_2 ->(q')  which is executed
+    then (q') -a_2-> (q1) from TM' ==emulator2==> TM'': (q') -a_2_1-> (q'') -a_2_2 ->(q1)  which is executed. 
 
 *)
 
@@ -295,7 +295,6 @@ module Split =
                     
       | Simultaneous actions -> [ (source, synchronize_multiple_bands actions, target) ]
 
-
                                
     (* THE SIMULATOR *)
 
@@ -303,74 +302,9 @@ module Split =
 
   end)
 
-
-
-module Binary_Emulator = struct
-  (* TRANSLATION OF BANDS *)
   
-  (* modules Bit and Bits are defined in Alphabet.ml *)
-  
-  open Alphabet
-     
-  type encoding = (Symbol.t * Bits.t) list
-  type decoding = (Bits.t * Symbol.t) list
-                
-  let build_encoding : Alphabet.t -> encoding = fun alphabet ->
-    let size = List.length alphabet.symbols in
-    let bitvectors = if size=1 then [ [Bit.unit] ] else Bits.enumerate size
-    in (MyList.zip alphabet.symbols bitvectors) 
-     
-  let reverse : encoding -> decoding = fun assocs ->
-    List.map (fun (s,b) -> (b,s)) assocs
-    
-  let encode_symbol_wrt : encoding -> Symbol.t -> Symbol.t list = fun encoding symbol ->
-    match symbol with
-    | B -> [B]
-    | _ -> List.assoc symbol encoding
-         
-  let encode_wrt : encoding -> Band.t list -> Band.t list = fun encoding bands ->
-    List.map
-      (Band.map_concat (encode_symbol_wrt encoding))
-      bands 
-    
-  (* REVERSE TRANSLATION *)
-    
-  let decode_symbol_wrt : decoding -> Symbol.t list -> Symbol.t option = fun decoding symbols ->
-    match symbols with
-    | [ B ] -> Some B
-    | bits  ->
-       try
-         Some (List.assoc bits decoding)
-       with Not_found -> None
-                                                            
-  let decode_wrt : decoding -> Band.t list -> Band.t list = fun decoding bands ->
-    List.map
-      (Band.apply (decode_symbol_wrt decoding))
-      bands
 
-  (* THE SIMULATOR *)
-
-  let (emulate_action_wrt: encoding -> State.t * Action.t * State.t -> Turing_Machine.t) = fun encoding (source,action,target) ->
-    (* FIXME *) 
-    { Turing_Machine.nop with
-      name = String.concat "" [ "Binary" ; Pretty.parentheses (Action.to_ascii action) ] ;
-      transitions = [ ]
-    }
-    
-  let make_simulator : Alphabet.t -> simulator = fun alphabet ->
-    let encoding = build_encoding alphabet in
-    let decoding = reverse encoding 
-    in
-    { name = "Binary" ;
-      encoder = encode_wrt encoding ;
-      decoder = decode_wrt decoding ;
-      emulator = emulate_action_wrt encoding
-    }
-
-end
-
-
-  
+ 
 (** The BitVector Emulator replaces symbols by bit vectors.
     It is not a real translation to a binary Turing Machine since a bit vector is treated as a single symbol.       
     Its only purpose is to show the binary encoding of bands.
@@ -442,8 +376,76 @@ module BitVector_Emulator = struct
 
 end
 
-  
 
+
+                          
+module Binary_Emulator = struct
+  
+  (* TRANSLATION OF BANDS *)
+  
+  (* modules Bit and Bits are defined in Alphabet.ml *)
+  
+  open Alphabet
+     
+  type encoding = (Symbol.t * Bits.t) list
+  type decoding = (Bits.t * Symbol.t) list
+                
+  let build_encoding : Alphabet.t -> encoding = fun alphabet ->
+    let size = List.length alphabet.symbols in
+    let bitvectors = if size=1 then [ [Bit.unit] ] else Bits.enumerate size
+    in (MyList.zip alphabet.symbols bitvectors) 
+     
+  let reverse : encoding -> decoding = fun assocs ->
+    List.map (fun (symbol,bits) -> (bits,symbol)) assocs
+    
+  let encode_symbol_wrt : encoding -> Symbol.t -> Symbol.t list = fun encoding symbol ->
+    match symbol with
+    | B -> [B]
+    | _ -> List.assoc symbol encoding
+         
+  let encode_wrt : encoding -> Band.t list -> Band.t list = fun encoding bands ->
+    List.map
+      (Band.map_concat (encode_symbol_wrt encoding))
+      bands 
+    
+  (* REVERSE TRANSLATION *)
+    
+  let decode_symbol_wrt : decoding -> Symbol.t list -> Symbol.t option = fun decoding symbols ->
+    match symbols with
+    | [ B ] -> Some B
+    | bits  ->
+       try
+         Some (List.assoc bits decoding)
+       with Not_found -> None
+                                                            
+  let decode_wrt : decoding -> Band.t list -> Band.t list = fun decoding bands ->
+    List.map
+      (Band.apply (decode_symbol_wrt decoding))
+      bands
+
+  (* THE SIMULATOR *)
+
+  let (emulate_action_wrt: encoding -> State.t * Action.t * State.t -> Turing_Machine.t) = fun encoding (source,action,target) ->
+    (* FIXME *) 
+    { Turing_Machine.nop with
+      name = String.concat "" [ "Binary" ; Pretty.parentheses (Action.to_ascii action) ] ;
+      transitions = [ ]
+    }
+    
+  let make_simulator : Alphabet.t -> simulator = fun alphabet ->
+    let encoding = build_encoding alphabet in
+    let decoding = reverse encoding 
+    in
+    { name = "Binary" ;
+      encoder = encode_wrt encoding ;
+      decoder = decode_wrt decoding ;
+      emulator = emulate_action_wrt encoding
+    }
+
+end
+                          
+
+                       
 (* DEMO *)
 
 open Alphabet
