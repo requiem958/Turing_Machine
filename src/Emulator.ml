@@ -385,33 +385,33 @@ end
 
 open Alphabet
 
-let demo: unit -> unit = fun () ->
-  let alphabet4 = Alphabet.make [I 1;I 2;I 3;I 4]
-  and loggers = [] in
-  let emulators = [ BitVector_Emulator.make_simulator alphabet4 ]
-  in List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
-       [
-         Configuration.make (TM_Basic.permut alphabet4) [ Band.make "Data" alphabet4 alphabet4.symbols ] 
-       ]
+let demo2: unit -> unit = fun () ->
+  let loggers = [] 
+  and alphabet4 = Alphabet.make [I 1;I 2;I 3;I 4]
+  in let emulators = [ BitVector_Emulator.make_simulator alphabet4 ]
+     in List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
+          [
+            Configuration.make (TM_Basic.permut alphabet4) [ Band.make "Data" alphabet4 alphabet4.symbols ] 
+          ]
 
   
-let old_demo: unit -> unit = fun () ->
-  let alphabet2 = Alphabet.make [Z;U] in
-  let band = Band.make "Data" alphabet2 [U;U;Z;U] in
-  let tm = TM_Basic.incr in
-  let cfg = Configuration.make tm [ band ] in
-  let loggers = [] 
-  and emulators =
-    [ (* Trace.simulator *)
-      (* Split.simulator *)
-      (* ; *)
-          BitVector_Emulator.make_simulator alphabet2 
-    ]
-  in let _final_cfg = Simulator.log_run_using (emulators,loggers) cfg 
-     in
-     List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
-       [
-         Configuration.make TM_Basic.neg  [ Band.make "Data" alphabet2 [Z;Z;Z;U] ] ;
-         Configuration.make TM_Basic.incr [ Band.make "Data" alphabet2 [U;U;Z;U] ]
+let demo1: unit -> unit = fun () ->
+  let loggers = []
+  and alphabet2 = Alphabet.make [Z;U] 
+  in let emulators =
+       [ (* Trace.simulator *)
+         (* Split.simulator *)
+         (* ; *)
+         BitVector_Emulator.make_simulator alphabet2 
        ]
+     in List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
+          [
+            Configuration.make TM_Basic.neg  [ Band.make "Data" alphabet2 [Z;Z;Z;U] ] ;
+            Configuration.make TM_Basic.incr [ Band.make "Data" alphabet2 [U;U;Z;U] ]
+          ]
 
+
+let demo: unit -> unit = fun () ->
+  begin
+    demo1() ; demo2()
+  end

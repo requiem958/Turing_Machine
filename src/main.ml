@@ -12,13 +12,12 @@
 
 let _ = Demo.demo ()
       
-        let _ = Emulator.demo ()           
+let _ = Emulator.demo ()           
+
 (*      
-
-
-
+        
 let _ = LC_by_MT.demo ()       
 
 let _ = Exercise.demo() 
 
- *)
+*)
