@@ -72,9 +72,9 @@ module Moving =
     type t = moving
 	  
     let (to_ascii: t -> string) = function
-      | Left  -> "Left"
-      | Here  -> "Here"
-      | Right -> "Right"
+      | Left  -> "L"
+      | Here  -> "H"
+      | Right -> "R"
 		
   end)
 
@@ -161,7 +161,7 @@ module Action =
 	      let r = Reading.to_ascii reading
 	      and w = Writing.to_ascii writing
 	      and m = Moving.to_ascii moving 
-	      in String.concat " " [ "r=" ^ r ; if w="" then "" else "w="^w ; if m="Here" then "" else "d="^m ]
+	      in String.concat "" [ r ; if w="" then "" else "\\"^w ; ":"^m ]
 		  
       | Simultaneous actions -> Pretty.brace (String.concat "," (List.map to_ascii actions))
 

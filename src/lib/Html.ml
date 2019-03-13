@@ -85,6 +85,11 @@ let environment: string * string * string -> options -> content -> content = fun
 			   before_mark ; "</" ^ mark ^ ">" ; after_mark ]
 
 
+(* PAR *)
+
+let par: content -> content = environment ("\n","P","\n") []      
+
+
 (* TABLE *)
 	
 (* table cell: <TD option> content </TD> *)

@@ -29,8 +29,12 @@ demarkup = $(MYBIN)/demarkup
 #}_
 
 
-MODULES = lib/Fresh Lambda_Calculus/Lambda_Calcul lib/Option lib/Tricks lib/MyList lib/MyString lib/Pretty lib/Bit_Vector lib/Date lib/Logger lib/Color lib/Html lib/Pattern Symbol State Alphabet Band Action Turing_Machine Configuration Execution Turing_Machines/TM_Basic Turing_Machines/TM_2Bands Turing_Machines/TM_Busy_Beaver Universal/UTM Demo 
-#LC_by_MT  Emulator $(SOL)
+MODULES = lib/Fresh lib/Option lib/Tricks lib/MyList lib/MyString lib/Pretty lib/Bit_Vector lib/Date lib/Logger lib/Color lib/Html lib/Pattern \
+Symbol State Alphabet Band Action Turing_Machine Configuration Execution \
+Turing_Machines/TM_Basic Turing_Machines/TM_2Bands Turing_Machines/TM_Busy_Beaver Universal/UTM Demo \
+Emulator
+#Lambda_Calculus/Lambda_Calcul \
+#Lambda_Calculus/LC_by_MT \
 
 ML  = $(addsuffix  .ml, $(MODULES))
 CMO = $(addsuffix .cmo, $(MODULES))

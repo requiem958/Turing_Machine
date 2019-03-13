@@ -41,9 +41,20 @@ module Execution =
 	  
    (* mutually recursives functions to deal with the instruction Run(TM)  *)
 
-    let rec execute_instruction_on_one_band: log -> instruction -> Band.t -> Band.t = fun log instruction band ->
-	  List.hd (execute_instruction log instruction [band])
-	    
+    let rec one_step: int * log -> Configuration.t -> Configuration.t = fun (call_depth,log) cfg ->
+      begin
+	Configuration.print_using ~n_first:call_depth log cfg
+      ;
+	match select_enabled_transition cfg.tm cfg with
+	| None            -> { cfg with status = Final }
+	| Some transition -> execute_transition log transition { cfg with transition = Some transition }
+      end
+
+    and execute_transition: log -> Transition.t -> Configuration.t -> Configuration.t = fun log (_,instruction,target) cfg ->
+      { cfg with bands = execute_instruction log instruction cfg.bands ;
+                 state = target
+      }
+      
     and execute_instruction: log -> instruction -> Band.t list -> Band.t list = fun log instruction bands ->
       match instruction with
       | Action action -> Action.perform action bands
@@ -72,19 +83,10 @@ module Execution =
 	 let final_cfg = i_log_run ~log:log initial_cfg
          in final_cfg.bands
 
-    and execute_transition: log -> Transition.t -> Configuration.t -> Configuration.t = fun log (_,instruction,target) cfg ->
-      { cfg with bands = execute_instruction log instruction cfg.bands ;
-                 state = target
-      } 
-
-    and one_step: int * log -> Configuration.t -> Configuration.t = fun (call_depth,log) cfg ->
-      begin
-	Configuration.print_using ~n_first:call_depth log cfg
-      ;
-	match select_enabled_transition cfg.tm cfg with
-	| None            -> { cfg with status = Final }
-	| Some transition -> execute_transition log transition cfg
-      end
+          
+    and execute_instruction_on_one_band: log -> instruction -> Band.t -> Band.t = fun log instruction band ->
+      List.hd (execute_instruction log instruction [band])
+	    
 
     and i_log_run ?call_depth:(call_depth=2) ?log:(log=[]) : (Configuration.t -> Configuration.t) = fun cfg ->
       let final_cfg = run (call_depth, cfg.logger::log) cfg in

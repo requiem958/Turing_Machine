@@ -1,4 +1,4 @@
-(* Michaël PÉRIN, Verimag / Université Grenoble-Alpes, Février 2017
+(* MichaÃ«l PÃ‰RIN, Verimag / UniversitÃ© Grenoble-Alpes, FÃ©vrier 2017
  *
  * Part of the project TURING MACHINES FOR REAL
  *
@@ -74,7 +74,7 @@ module Instruction =
 
     (* ENABLED ONE INSTRUCTION on ONE BAND *)
                                                                                                              
-    let rec (is_enabled_on_this: Band.t -> instruction -> bool) = fun band instruction ->
+    let rec is_enabled_on_this: Band.t -> instruction -> bool = fun band instruction ->
       match instruction with
       | Action action -> Action.is_enabled_on_this band action
       | Call _ | Run  _ -> true
@@ -84,7 +84,7 @@ module Instruction =
 
     (* ENABLED COMPLEX INSTRUCTION on MULTIPLE BANDS *)
                                                                                                              
-    let rec (is_enabled_on: Band.t list -> instruction -> bool) = fun bands instruction ->
+    let rec is_enabled_on: Band.t list -> instruction -> bool = fun bands instruction ->
       (bands <> [])
       &&
 	(match instruction with
@@ -104,7 +104,7 @@ module Instruction =
 	
     (* PRETTY PRINTING *)
 	
-    let rec (to_ascii: t -> string) = fun instruction ->
+    let rec to_ascii: t -> string = fun instruction ->
 	  match instruction with
 	  | Action action -> Action.to_ascii action
 	  | Call tm_name -> tm_name
@@ -112,12 +112,12 @@ module Instruction =
 	  | Seq instructions -> Pretty.brace (String.concat " ; " (List.map to_ascii instructions))
 	  | Parallel instructions -> Pretty.bracket (String.concat " || " (List.map to_ascii instructions))
 		    
-    let (to_html: Html.options -> instruction -> Html.cell) = fun options instruction ->
+    let to_html: Html.options -> instruction -> Html.cell = fun options instruction ->
 	  Html.cell options (to_ascii instruction)
 	    
     (* user *)
 
-    let (pretty: t -> string) = fun t ->
+    let pretty: t -> string = fun t ->
 	  match Pretty.get_format() with
 	  | Pretty.Html  -> to_html [] t
 	  | Pretty.Ascii -> to_ascii t
@@ -154,8 +154,8 @@ module Transition =
    (* PRETTY PRINTING *)
 
     let (to_ascii: t -> string) = fun (source,instruction,target) ->
-	  String.concat " " [ State.to_ascii source ; "--" ; Instruction.to_ascii instruction ; "->" ; State.to_ascii target ]
-
+      [ Pretty.parentheses (State.to_ascii source) ; Instruction.to_ascii instruction ; Pretty.parentheses (State.to_ascii target) ]
+      |> (String.concat "  ")
 	    
     let (to_ascii_many: t list -> string) = fun transitions ->
       transitions
@@ -183,7 +183,6 @@ module Turing_Machine =
 	   
     let (nop: t) = { name = "" ;
 		     nb_bands = 1 ; 
-                     (* active_bands = [1] ; *)
 		     initial = State.initial ;
                      accept  = State.accept  ;
                      reject  = State.reject  ;
@@ -213,7 +212,8 @@ module Turing_Machine =
       | Pretty.Html  -> (to_html [])
       | Pretty.Ascii -> to_ascii
    (* | Pretty.Dot   -> TODO *)
-		
+
+                      
 		
     (* IMPERATIVE FEATURES for reusing existing turing machine *) 	    
 		

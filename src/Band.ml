@@ -168,18 +168,14 @@ module Band =
 
     let (head_to_html: band -> symbol -> Html.cell) = fun band symbol ->
 	  Html.cell []
-	    (Html.table [("bordercolor", Html.Color Color.green)]
+	    (Html.table [("bordercolor", Html.Color Color.red) ; ("cellpadding",Html.Int 0) ; ("cellspacing",Html.Int 1) ; ("border",Html.Int 1)]
 	       [ Html.row [] [ cell_to_html band band.head ] ]
 	    )
 
     let (name_to_html: band -> Html.cell) = fun band ->
-	  Html.cell []
-	    (Html.table [("bordercolor", Html.Color Color.gray) ; ("border", Html.Int 1) ;  ("cellpadding",Html.Int 4) ]
-	       [Html.row []
-                  [Html.cell
-    	             [("align", Html.Option "center") ]
-                     (Html.font [ ("color", Html.Color Color.gray) ; ("size", Html.Int 2) ] ("&nbsp;&nbsp;" ^band.name ^ "&nbsp;&nbsp;"))
-            ]])
+      let name = Html.font [ ("color", Html.Color Color.gray) ; ("size", Html.Int 2) ] ("&nbsp;&nbsp;" ^band.name ^ "&nbsp;&nbsp;")
+      in
+      Html.cell [("align", Html.Option "center") ] name
 
         
     let to_html: Html.options -> band -> Html.row = fun options band ->
@@ -192,21 +188,22 @@ module Band =
 	@
 	  (List.map (cell_to_html band) (band.right))
       in
-      Html.row options cells
+      Html.row [] cells 
+
 
       
     let to_html_many: Html.options -> band list -> Html.table = fun options bands ->
       let rows = List.map (to_html []) bands
       in
       Html.table
-	(options @ [ ("bordercolor", Html.Color Color.white) ; ("cellpadding",Html.Int 1) ; ("cellspacing",Html.Int 1) ; ("border",Html.Int 1) ])
+	(options @ [ ("bordercolor", Html.Color Color.gray) ; ("cellpadding",Html.Int 0) ; ("cellspacing",Html.Int 1) ; ("border",Html.Int 1) ])
 	rows
 
     (* user *)
 
     let pretty (*USER*) : t -> string = fun t ->
 	  match Pretty.get_format() with
-	  | Pretty.Html  -> to_html [] t
+	  | Pretty.Html  -> to_html [("bordercolor", Html.Color Color.red) ; ("cellpadding",Html.Int 4) ; ("cellspacing",Html.Int 4) ; ("border",Html.Int 1)] t
 	  | Pretty.Ascii -> to_ascii t
 
 end)

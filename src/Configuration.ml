@@ -26,12 +26,15 @@ open State
 open Action
 open Turing_Machine
   
-  
+let _TRACE_ = true
+   
 type status = Running | Final
   
 type configuration = { tm    : Turing_Machine.t ;
 		       bands : Band.t list ;
 		       state : State.t ;
+
+                       transition: Transition.t option ;
 		       status: status ; 
 		       logger: Logger.t ;
 		     }
@@ -56,6 +59,7 @@ module Configuration =
 	bands  = bands ;
 	state  = tm.initial ;
 	status = Running ;
+        transition = None ;
 	logger = new Logger.logger (Some filename)
       }
 
@@ -77,7 +81,7 @@ module Configuration =
 
     (* html *)
 
-    let to_html: Html.options -> configuration -> Html.table = fun options cfg ->
+    let to_html: Html.options -> configuration -> Html.content = fun options cfg ->
       let tm_name = Html.cell [] cfg.tm.name
 	          
       and bands = Html.cell [] (Band.to_html_many options cfg.bands)
@@ -89,13 +93,16 @@ module Configuration =
 	  else Color.white
 	in State.to_html [("bgcolor", Html.Color state_color)] cfg.state
       in
-      Html.table
-	(options @ [ ("bordercolor", Html.Color Color.gray) ; ("cellpadding",Html.Int 5) ; ("cellspacing",Html.Int 5) ; ("border",Html.Int 1) ])
-        [ Html.row
-            []
-	    [ tm_name ; state ; bands ]
+      Html.concat
+        [ if _TRACE_ then  Html.par (match cfg.transition with None -> "" | Some transition -> Transition.to_ascii transition) else Html.nil
+        ;
+          Html.table
+	    (options @ [ ("bordercolor", Html.Color Color.gray) ; ("cellpadding",Html.Int 5) ; ("cellspacing",Html.Int 5) ; ("border",Html.Int 1) ])
+            [ Html.row []
+	        [ tm_name ; if cfg.status<>Final then state else "" ; bands ]
+            ]
         ]
-	      
+      
     (* user *)
 
     let (pretty: t -> string) = fun t ->

@@ -19,12 +19,15 @@
 
 type symbol =
   | B (* Blank *)
-  | D (* Dark  *)
+
+  | F (* False *)
+  | T (* True, Tete *)
 
   | U (* the 1 bit *)
   | Z (* the 0 bit *)
 
-  | S (* a separator *)
+  | D (* Dark, Dollar, Dot *)
+  | S (* separator, sharp *)
 
   (* LAMBDA-CALCULUS: additional symbols for simulating the beta-reducton with MT, required by LC_by_MT *)
 
@@ -50,7 +53,7 @@ type symbol =
   | Exc  (* exception state *)
 
   | L    (* Left  move *)
-  | H    (* Here  move *)
+  | H    (* Here  move, or Head *)
   | R    (* Right move *)
 
   
@@ -72,51 +75,59 @@ module Symbol =
 
     let rec verbatim : t -> string
       = function
-        | B -> "B"
-        | D -> "D"
-        | U -> "U"
-        | Z -> "Z"
-        | S -> "S"
+      | B -> "B"
 
-        | L -> "L"
-        | O -> "O"
-        | C -> "C"
-        | X -> "X"
+      | F -> "F"
+      | T -> "T"
 
-        | V(string,int) -> String.concat "" [ "V" ; Pretty.parentheses (string ^ "," ^ (string_of_int int)) ]
-        | Vector symbols  -> String.concat "" [ "Vector" ; Pretty.bracket (String.concat ";" (List.map verbatim symbols)) ]
-        | Column symbols  -> String.concat "" [ "Column" ; Pretty.bracket (String.concat ";" (List.map verbatim symbols)) ]
-
-        | Std -> "Std"
-        | Acc -> "Acc"
-        | Exc -> "Exc"
-        | H -> "H"
-        | R -> "R"
-          
+      | U -> "U"
+      | Z -> "Z"
+                 
+      | D -> "D"
+      | S -> "S"
+           
+      | L -> "L"
+      | O -> "O"
+      | C -> "C"
+      | X -> "X"
+           
+      | V(string,int) -> String.concat "" [ "V" ; Pretty.parentheses (string ^ "," ^ (string_of_int int)) ]
+      | Vector symbols  -> String.concat "" [ "Vector" ; Pretty.bracket (String.concat ";" (List.map verbatim symbols)) ]
+      | Column symbols  -> String.concat "" [ "Column" ; Pretty.bracket (String.concat ";" (List.map verbatim symbols)) ]
+                         
+      | Std -> "Std"
+      | Acc -> "Acc"
+      | Exc -> "Exc"
+      | H -> "H"
+      | R -> "R"
+           
                            
     (* ascii output *)
 
     let rec to_ascii : symbol -> string
       = function
-        | B -> "_"
-        | D -> "$"
+      | B -> "_"
 
-        | U -> "U"
-        | Z -> "Z"
-
-        | S -> "#"
-
-        | L -> "L"
-        | O -> "("
-        | C -> ")"
-        | X -> "x"
-        | V(string,int) -> string ^ (if int<0 then "" else string_of_int int)
-
-        | Vector symbols -> Pretty.parentheses (String.concat "," (List.map to_ascii symbols))
-
-        | Column symbols -> Pretty.bracket (String.concat "|" (List.map to_ascii symbols))
-
-        | symbol -> verbatim symbol
+      | F -> "F"
+      | T -> "T"
+           
+      | U -> "1"
+      | Z -> "0"
+           
+      | D -> "."
+      | S -> "#"
+           
+      | L -> "L"
+      | O -> "("
+      | C -> ")"
+      | X -> "x"
+      | V(string,int) -> string ^ (if int<0 then "" else string_of_int int)
+                       
+      | Vector symbols -> Pretty.parentheses (String.concat "," (List.map to_ascii symbols))
+                        
+      | Column symbols -> Pretty.bracket (String.concat "|" (List.map to_ascii symbols))
+                        
+      | symbol -> verbatim symbol
         
 
     (* html output *)
@@ -125,10 +136,15 @@ module Symbol =
       = fun symbol ->
         match symbol with (* back_ground_color, font_color *)
         | B -> (Color.white , Color.white)
-        | Z -> (Color.blue  , Color.yellow)
-        | U -> (Color.yellow, Color.blue)
-        | D -> (Color.black , Color.black)
-        | S -> (Color.red   , Color.white)
+
+        | F -> (Color.yellow, Color.yellow)
+        | T -> (Color.blue  , Color.blue)
+(*
+        | U -> (Color.blue  , Color.yellow)
+        | Z -> (Color.yellow, Color.blue)
+ *)
+        | D -> (Color.black , Color.green)
+        | S -> (Color.white , Color.red)
         | _ -> (Color.white , Color.black)
 
     let ft_color : symbol -> Color.t = fun symbol -> snd (color symbol)
@@ -141,7 +157,7 @@ module Symbol =
         | Vector symbols -> Html.tuple  options (List.map (to_html []) symbols)
         | Column symbols -> Html.column options (List.map (to_html []) symbols)
         | _ ->
-          Html.cell [ ("align", Html.Option "center") ; ("bgcolor", Html.Color (bg_color symbol)) ]
+          Html.cell [  ("height", Html.Int 5) ; ("width", Html.Int 12) ; ("align", Html.Option "center") ; ("bgcolor", Html.Color (bg_color symbol)) ]
             (Html.font [ ("color", Html.Color (ft_color symbol)) ]
                (Html.bold (to_ascii symbol)))
 
