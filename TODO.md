@@ -1,6 +1,7 @@
 TODO
 ====
 
+## replace B by Nil ?
 
 
 ## Simulation d'une MT multi-bandes par une MT standard

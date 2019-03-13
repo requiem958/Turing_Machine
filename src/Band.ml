@@ -54,16 +54,57 @@ module Band =
 
     let (nb_cells: band -> int * int) = fun band -> (List.length band.left, List.length band.right)
 
-    let (map: (Symbol.t -> Symbol.t) -> t -> t) = fun f band ->
-       { band with left = List.map f band.left ; head = f band.head ; right = List.map f band.right }
+    let map: (Symbol.t -> Symbol.t) -> t -> t = fun f band ->
+      { band with left = List.map f band.left ;
+                  head = f band.head ;
+                  right = List.map f band.right
+      }
 
-    let (map_concat: (Symbol.t -> Symbol.t list) -> t -> t) = fun f band ->
+    let map_concat: (Symbol.t -> Symbol.t list) -> t -> t = fun f band ->
       let (head_symbol,other_head_symbols) = 
         match f band.head with
         | [symbol]         -> (symbol,[])
         |  symbol::symbols -> (symbol,symbols)
       in
-      { band with left = MyList.map_concat f band.left ; head = head_symbol ; right = other_head_symbols @ (MyList.map_concat f band.right) }
+      { band with left  = List.rev (MyList.map_concat f (List.rev band.left)) ;
+                  head  = head_symbol ;
+                  right = other_head_symbols @ (MyList.map_concat f band.right)
+      }
+
+                    
+    let apply_not_fixed_arity_function : ('t list -> 'r option) -> 't list -> 't list * 't list = fun f ts ->
+      
+      let rec apply_f: 'r list -> 't list * 't list -> 't list * 't list = fun results (prefix,tail) ->
+        if prefix=[]
+        then
+          (match tail with
+           | []    -> (List.rev results, prefix)
+           | t::ts ->  apply_f results (prefix@[t], ts)
+          )
+        else
+          match f prefix with
+          | Some r -> apply_f (r::results) ([],tail) 
+          | None ->
+             (match tail with
+              | []    -> (List.rev results, prefix)
+              | t::ts ->  apply_f results (prefix@[t], ts)
+             )
+            
+      in apply_f [] ([],ts)
+       
+    (* I'M HERE *)
+       
+    let apply: (Symbol.t list -> Symbol.t option) -> band -> band = fun f band ->
+      let (tfel, reminder) = apply_not_fixed_arity_function f (List.rev band.left) in
+      let (tail, reminder) = apply_not_fixed_arity_function f (reminder @ [ band.head ] @ band.right) 
+      in match tail @ reminder with
+         | head::right ->
+            { band with left  = List.rev tfel ;
+                        head  = head ;
+                        right = right
+            }
+         
+    
 
     (* /!\ The left part of the band is written in the reverse ordrer. It is easier to implement this way.
      *  A band containing  a b c d (e) f g h with the head on (e) will be encoded by
