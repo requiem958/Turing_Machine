@@ -39,19 +39,20 @@ module Bit =
 module Bits = Bit_Vector.Made_Of(Bit)
 
 
-type alphabet = { symbols: symbols ; symbol_size_in_bits: int }
+type alphabet = { symbols: symbols ; symbol_size_in_bits: int (* USELESS *)}
 
 module Alphabet =
   (struct
 
     type t = alphabet
 
-    let empty : alphabet = { symbols = [B] ; symbol_size_in_bits = 1 }
+    (*    let empty : alphabet = { symbols = [B] ; symbol_size_in_bits = 1 } *)
+
+    let empty : alphabet = { symbols = [] ; symbol_size_in_bits = 0 } 
 
     let make : symbols -> alphabet
       = fun symbols ->
-        let symbols = MyList.union [B] symbols
-        in
+      (* let symbols = MyList.union [B] symbols in *)
         { symbols = symbols ;
           symbol_size_in_bits = Bits.nb_bits_for (List.length symbols)
         }

@@ -20,18 +20,19 @@
 type symbol =
   | B (* Blank *)
 
+  | T (* True  *)
   | F (* False *)
-  | T (* True, Tete *)
 
+  | I of int  (* /!\ a infinite number of symbols: This is cheating, but convenient *)
+       
   | U (* the 1 bit *)
   | Z (* the 0 bit *)
+  
+  | D (* Dot, Dollar *)
+  | S (* Separator, Sharp, Semicolumn *)
 
-  | D (* Dark, Dollar, Dot *)
-  | S (* separator, sharp *)
-
-  (* LAMBDA-CALCULUS: additional symbols for simulating the beta-reducton with MT, required by LC_by_MT *)
-
- (* L    lambda *)
+ (* For LAMBDA-CALCULUS: additional symbols for simulating the beta-reducton with MT, required by LC_by_MT 
+  | L    lambda *)
   | O (* the opening parenthesis *)
   | C (* the closing parenthesis *)
   | X (* the variable symbol followed by a identifier as a sequence of bits *)
@@ -46,8 +47,7 @@ type symbol =
 
   | Column of symbols
 
-                (* UNIVERSAL TURING MACHINE: see Universal/UTM.ml *)
-            
+ (* For UNIVERSAL TURING MACHINE: see Universal/UTM.ml *)
   | Std  (* standard state *)
   | Acc  (* accepting state *)
   | Exc  (* exception state *)
@@ -55,10 +55,6 @@ type symbol =
   | L    (* Left  move *)
   | H    (* Here  move, or Head *)
   | R    (* Right move *)
-
-  
-  
- 
 
 and symbols = symbol list
 
@@ -80,6 +76,8 @@ module Symbol =
       | F -> "F"
       | T -> "T"
 
+      | I(int) -> string_of_int int
+                
       | U -> "U"
       | Z -> "Z"
                  
@@ -143,7 +141,7 @@ module Symbol =
         | U -> (Color.blue  , Color.yellow)
         | Z -> (Color.yellow, Color.blue)
  *)
-        | D -> (Color.black , Color.green)
+        | D -> (Color.black , Color.white)
         | S -> (Color.white , Color.red)
         | _ -> (Color.white , Color.black)
 

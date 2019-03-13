@@ -156,12 +156,16 @@ module Simulator =
               if (* FIXME: Band.are_equivalents (regardless of starting or ending B) instead of = *)
                 bands_updated_by_execution = bands_updated_by_emulation
               then bands_updated_by_execution
-              else failwith
+              else
+                begin
+                  (String.concat "\n" [ Band.to_ascii_many bands_updated_by_emulation ; Band.to_ascii_many bands_updated_by_execution ; "\n" ]) |> print_string ;
+                  failwith
                      (String.concat "\n" [ "Emulator.execute_action_using: simulation errors" ;
                                            Band.to_ascii_many  bands_updated_by_emulation ;
                                            "are not equivalent to" ;
                                            Band.to_ascii_many  bands_updated_by_execution ;
                      ])
+                end
       in
       { cfg with bands = next_bands ; transition = Some (src,Action action,tgt) }
       
@@ -302,49 +306,54 @@ module Split =
 
 
 
-module Binary_Emulator =
-  struct
+module BitVector_Emulator =
+struct
   
-    (* TRANSLATION OF BANDS *)
+  (* TRANSLATION OF BANDS *)
 
-    (* USED? 
-  module BD : Bit_Vector.Two_Values_Sig =
-  struc   t
-    type t       = symbol
-    let zero : t = B
-    let unit : t = T
-    let pretty : t -> string = Symbol.pretty
-  end
-   *)
-
-
-    (* modules Bit and Bits are defined in Alphabet.ml *)
+  (* modules Bit and Bits are defined in Alphabet.ml *)
     
-    open Alphabet
+  open Alphabet
        
-    type encoding = (Symbol.t * Bits.t) list
+  type encoding = (Symbol.t * Bits.t) list
+  type decoding = (Bits.t * Symbol.t) list
 
   let build_encoding : Alphabet.t -> encoding = fun alphabet ->
-    let symbol_to_bits : Symbol.t -> Bits.t = fun symbol ->
-      [ Bit.zero ; Bit.unit ](* FIXME *)
-    in
-    List.map (fun symbol -> (symbol, symbol_to_bits symbol)) alphabet.symbols
+    let size = List.length alphabet.symbols in
+    let bitvectors = if size=1 then [ [Bit.unit] ] else Bits.enumerate size
+    in (MyList.zip alphabet.symbols bitvectors) 
 
-  let encode_with : encoding -> Band.t list -> Band.t list = fun encoding bands ->
+  let reverse : encoding -> decoding = fun assocs ->
+    List.map (fun (s,b) -> (b,s)) assocs
+
+  let encode_symbol_wrt : encoding -> Symbol.t -> Symbol.t = fun encoding symbol ->
+    match symbol with
+    | B -> B
+    | _ -> Vector (List.assoc symbol encoding)
+    
+  let encode_wrt : encoding -> Band.t list -> Band.t list = fun encoding bands ->
     List.map
-      (Band.map (function U -> Bit.unit | Z -> Bit.zero))
+      (Band.map (encode_symbol_wrt encoding))
       bands 
 
   (* REVERSE TRANSLATION *)
 
-  let decode_with : encoding -> Band.t list -> Band.t list = fun encoding bands ->
-    List.map (Band.map (fun bit -> if (bit=Bit.unit) then U else Z)) bands
+  let decode_symbol_wrt : decoding -> Symbol.t -> Symbol.t = fun decoding symbol ->
+    match symbol with
+    | B -> B
+    | Vector(bits) -> List.assoc bits decoding
+    
+  let decode_wrt : decoding -> Band.t list -> Band.t list = fun decoding bands ->
+    List.map
+      (Band.map (decode_symbol_wrt decoding))
+      bands
 
 
   (* EMULATION OF TRANSITIONS *)
 
-  let (emulate_action: State.t * Action.t * State.t -> Turing_Machine.t) = fun (source,action,target) ->
-      let action = Action.map (function U -> Bit.unit | Z -> Bit.zero) action in
+  let (emulate_action_wrt: encoding -> State.t * Action.t * State.t -> Turing_Machine.t) = fun encoding (source,action,target) ->
+    let action = Action.map (encode_symbol_wrt encoding) action
+    in
       let (source,target) =
       if source <> target   (* /!\ loop in the emulated TM if source=target *)
       then (source,target)
@@ -360,12 +369,13 @@ module Binary_Emulator =
   (* THE SIMULATOR *)
 
   let make_simulator : Alphabet.t -> simulator = fun alphabet ->
-    let encoding = build_encoding alphabet
+    let encoding = build_encoding alphabet in
+    let decoding = reverse encoding 
     in
-    { name = "Binary" ;
-      encoder = encode_with encoding ;
-      decoder = decode_with encoding ;
-      emulator = emulate_action
+    { name = "BitVector" ;
+      encoder = encode_wrt encoding ;
+      decoder = decode_wrt decoding ;
+      emulator = emulate_action_wrt encoding
     }
 
 end
@@ -376,21 +386,32 @@ end
 open Alphabet
 
 let demo: unit -> unit = fun () ->
-  let alphabet = Alphabet.make [B;Z;U] in
-  let band = Band.make "Data" alphabet [U;U;Z;U] in
+  let alphabet4 = Alphabet.make [I 1;I 2;I 3;I 4]
+  and loggers = [] in
+  let emulators = [ BitVector_Emulator.make_simulator alphabet4 ]
+  in List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
+       [
+         Configuration.make (TM_Basic.permut alphabet4) [ Band.make "Data" alphabet4 alphabet4.symbols ] 
+       ]
+
+  
+let old_demo: unit -> unit = fun () ->
+  let alphabet2 = Alphabet.make [Z;U] in
+  let band = Band.make "Data" alphabet2 [U;U;Z;U] in
   let tm = TM_Basic.incr in
   let cfg = Configuration.make tm [ band ] in
-
   let loggers = [] 
   and emulators =
-    [  (* Trace.simulator *)
-       Split.simulator 
-       (* ; Binary_Emulator.make_simulator alphabet *)
+    [ (* Trace.simulator *)
+      (* Split.simulator *)
+      (* ; *)
+          BitVector_Emulator.make_simulator alphabet2 
     ]
   in let _final_cfg = Simulator.log_run_using (emulators,loggers) cfg 
      in
      List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
-       [ Configuration.make TM_Basic.neg  [ Band.make "Data" alphabet [Z;Z;Z;U] ] ;
-         Configuration.make TM_Basic.incr [ Band.make "Data" alphabet [U;U;Z;U] ]
+       [
+         Configuration.make TM_Basic.neg  [ Band.make "Data" alphabet2 [Z;Z;Z;U] ] ;
+         Configuration.make TM_Basic.incr [ Band.make "Data" alphabet2 [U;U;Z;U] ]
        ]
 

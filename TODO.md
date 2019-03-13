@@ -2,11 +2,6 @@ TODO
 ====
 
 
-## src/Simulator/ PROJET 2017
-
-- **FIXME** `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers that can, for instance,
-    - simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
-
 
 ## Simulation d'une MT multi-bandes par une MT standard
 
@@ -16,9 +11,25 @@ TODO
 
 ## Algo/
 
+- générateur de nombre aléatoire
+
 - réalisation de pi: Nat -> Nat : n -> la nième décimale de \pi
+  
 - réalisation du crible d'Erathostène
 
+- addition
+  B1: 123+345+456
+  B2: résultat
+
+- multiplication binaire
+  B1:01010101011
+  B2:01110101
+  B3:résultat
+
+- calculatrice binaire
+  B1: opérande 1
+  B2: opérande 2
+  B3: opérateur -> résultat
 
 ## Compilation 
 

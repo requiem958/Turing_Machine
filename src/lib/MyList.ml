@@ -50,8 +50,10 @@ let exists_in: 't list -> ('t -> bool) -> bool = fun l p -> List.exists p l
 let (optional_find: ('t -> bool) -> 't list -> 't option) = fun p l ->
   try Some (List.find p l) with Not_found -> None
 
-let (foreach_in: 'x list -> ('x -> 'y list) -> 'y list) = fun xs f ->
+let foreach_in: 'x list -> ('x -> 'y list) -> 'y list = fun xs f ->
   List.fold_right (fun x ys -> (f x) @ ys) xs []
+
+let map_concat: ('x -> 'y list) -> 'x list -> 'y list = fun f xs -> foreach_in xs f  
 
 let (foreach_st: ('x -> bool) -> 'x list -> ('x -> 'y list) -> 'y list) = fun pred xs f ->
   foreach_in (List.filter pred xs) f

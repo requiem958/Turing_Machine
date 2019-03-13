@@ -68,6 +68,11 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
 
 - `Execution.ml` : Execution of single-band or multi-bands Turing Machines with logging of the execution steps
 
+- `Emulator.ml` : provides means to write Emulators, ie. just-in-time compilers which can, for instance,
+    - Trace: shows the action that will be performed
+    - Split: executes the transition R/W:M in 3 independant steps Read ; Write ; Move
+    - Binary: simulate the action of a TM operating on an alphabet \Sigma by a Turing Machine operating on bit-vectors encoding the symbols of \Sigma.
+
 
 ### [src/Turing_Machines/](src/Turing_Machines/)
 
@@ -77,11 +82,13 @@ Each module containts a demo function called `demo()` (sometimes it is defined i
 
  - `TM_Busy_Beaver.ml` : The busy beavers BB4, BB5, BB6
 
+
 ### [src/Universal/](src/Universal/)
 
   - `README.md` 
   
   - `UTM.ml` : The Universal Turing Machine as 3-Bands Turing Machine (PROJET 2019)
+
 
 ### src/Lambda_Calculus/
 

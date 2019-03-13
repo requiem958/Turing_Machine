@@ -57,6 +57,13 @@ module Band =
     let (map: (Symbol.t -> Symbol.t) -> t -> t) = fun f band ->
        { band with left = List.map f band.left ; head = f band.head ; right = List.map f band.right }
 
+    let (map_concat: (Symbol.t -> Symbol.t list) -> t -> t) = fun f band ->
+      let (head_symbol,other_head_symbols) = 
+        match f band.head with
+        | [symbol]         -> (symbol,[])
+        |  symbol::symbols -> (symbol,symbols)
+      in
+      { band with left = MyList.map_concat f band.left ; head = head_symbol ; right = other_head_symbols @ (MyList.map_concat f band.right) }
 
     (* /!\ The left part of the band is written in the reverse ordrer. It is easier to implement this way.
      *  A band containing  a b c d (e) f g h with the head on (e) will be encoded by
