@@ -70,6 +70,8 @@ module Alphabet =
 
     let lambda : alphabet = make [D;U;Z;S;L;O;C;X]
 
+    let full : alphabet = make [T;F;U;Z;D;S;O;C;X;Std;Acc;Exc;L;H;R]
+                        
   end)
 
 

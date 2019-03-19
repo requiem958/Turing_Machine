@@ -150,9 +150,8 @@ module Action =
       List.map
 	(fun (action,band) -> perform_on_one_band action band)
 	(zip actions bands)
-      
 
-                
+               
     (* PRETTY PRINTING *)
 
     let rec (to_ascii: t -> string) = function

@@ -20,7 +20,7 @@ open Configuration
 open Execution
 
 
-(** Given a SINGLE transition (q) -action-> (q'), an emulator builds a Turing Machine with initial state (q) which simulates the effect of the transition on bands *)
+(** Given a SINGLE transition -action->, an emulator builds a Turing Machine that simulates the effect of the transition on bands *)
    
 type emulator   = State.t * Action.t * State.t -> Turing_Machine.t
 
@@ -386,52 +386,147 @@ module Binary_Emulator = struct
   (* modules Bit and Bits are defined in Alphabet.ml *)
   
   open Alphabet
-     
-  type encoding = (Symbol.t * Bits.t) list
-  type decoding = (Bits.t * Symbol.t) list
-                
+
+  type encoding =
+    { nb_bits: int ;
+      assocs: (Symbol.t * Bits.t) list 
+    }
+
+  type decoding =
+    { nb_bits: int ;
+      assocs: (Bits.t * Symbol.t) list
+    }
+                   
   let build_encoding : Alphabet.t -> encoding = fun alphabet ->
     let size = List.length alphabet.symbols in
+    let n = Bits.nb_bits_for size in
+    let nxNil = MyList.make n B
+    in 
     let bitvectors = if size=1 then [ [Bit.unit] ] else Bits.enumerate size
-    in (MyList.zip alphabet.symbols bitvectors) 
-     
-  let reverse : encoding -> decoding = fun assocs ->
-    List.map (fun (symbol,bits) -> (bits,symbol)) assocs
+    in { nb_bits  = n ;
+         assocs = (B,nxNil) :: (MyList.zip alphabet.symbols bitvectors)
+       }
+
+  let reverse : encoding -> decoding = fun encoding ->
+    { nb_bits = encoding.nb_bits ;
+      assocs = List.map (fun (symbol,bits) -> (bits,symbol)) encoding.assocs
+    }
     
   let encode_symbol_wrt : encoding -> Symbol.t -> Symbol.t list = fun encoding symbol ->
-    match symbol with
-    | B -> [B]
-    | _ -> List.assoc symbol encoding
+    List.assoc symbol encoding.assocs
          
   let encode_wrt : encoding -> Band.t list -> Band.t list = fun encoding bands ->
     List.map
       (Band.map_concat (encode_symbol_wrt encoding))
       bands 
+
     
   (* REVERSE TRANSLATION *)
     
   let decode_symbol_wrt : decoding -> Symbol.t list -> Symbol.t option = fun decoding symbols ->
-    match symbols with
-    | [ B ] -> Some B
-    | bits  ->
-       try
-         Some (List.assoc bits decoding)
-       with Not_found -> None
-                                                            
+    try
+      Some (List.assoc symbols decoding.assocs)
+    with
+      Not_found -> None
+
   let decode_wrt : decoding -> Band.t list -> Band.t list = fun decoding bands ->
     List.map
       (Band.apply (decode_symbol_wrt decoding))
       bands
-
-  (* THE SIMULATOR *)
-
-  let (emulate_action_wrt: encoding -> State.t * Action.t * State.t -> Turing_Machine.t) = fun encoding (source,action,target) ->
-    (* FIXME *) 
-    { Turing_Machine.nop with
-      name = String.concat "" [ "Binary" ; Pretty.parentheses (Action.to_ascii action) ] ;
-      transitions = [ ]
-    }
     
+
+  (** THE SIMULATOR *)
+
+  (*** Emulating the reading of a binary word *)
+
+  (*** The case of simple patterns recognizing anything or just one binary word *)
+    
+  let make_reading_SEQ: encoding -> State.t * State.t -> Bits.t pattern -> Transition.t list
+    = fun encoding (source,target) word_pattern
+    -> let moves  = (MyList.make (encoding.nb_bits -1) Right) @ [Here]
+       and bit_patterns =
+         match word_pattern with
+         | ANY -> MyList.make encoding.nb_bits ANY
+         | VAL word -> List.map (fun bit -> VAL(bit)) word
+       in
+       let reads = List.map
+                     (fun (pattern,move) -> Action( RWM(Match(pattern), No_Write, move)) )
+                     (MyList.zip bit_patterns moves)
+       in [ (source, Seq(reads), target) ]
+
+
+  (*** The case of complex patterns wich recognize of a set of words requires a TM built from a Binary Tree.
+       The binary tree is used to represent the set of binary words and to share common prefixes *)
+        
+  module BTree = Binary_Tree.Made_Of(Bit)
+               
+  let make_node_from: State.t -> Bit.t -> State.t = fun state bit ->
+    match state with
+    | Q(i) -> Qs(i,[bit])
+    | Qs(i,bits) -> Qs(i,bits@[bit])
+    | Qc(s,ints) -> Qc(s,ints@[if bit=Bit.zero then 0 else 1])
+
+
+  let make_reading_TM: encoding -> State.t * State.t -> Bits.t pattern -> Transition.t list 
+    = fun encoding (source,target) word_pattern
+    -> match word_pattern with
+       | IN words 
+         -> let edges =
+              (BTree.build_from words)
+              |> (BTree.to_graph_with make_node_from source (Some target))
+            in 
+            List.map
+              (fun (src,bit,tgt) ->
+                let move = if (tgt = target) then Here else Right
+                in let action = RWM( Match(VAL(bit)), No_Write, move)
+                in (src, Action(action), tgt)
+              )
+              edges
+      (* FIXME TODO using Turing_mahcine.complementary 
+       | BUT word -> 
+       | OUT words -> 
+       *)
+            
+        
+  let (emulate_reading_wrt: encoding -> State.t * State.t -> reading -> Transition.t list) = fun encoding (source,target) ->
+    function Match(pattern) ->
+              let word_pattern = Pattern.map (encode_symbol_wrt encoding) pattern
+              in match word_pattern with
+                 | ANY | VAL _
+                   -> make_reading_SEQ encoding (source,target) word_pattern
+                 | IN _ | BUT _ | OUT _
+                   -> make_reading_TM  encoding (source,target) word_pattern
+
+
+  let (just_move: moving  -> Instruction.t) = fun moving -> Action(RWM(Match(ANY),No_Write,moving))
+
+       
+  let (emulate_action_wrt: encoding -> State.t * Action.t * State.t -> Turing_Machine.t) = fun encoding (_,action,_) ->
+    let istate = State.next_from State.initial
+    in match action with 
+       | RWM(reading,writing,moving)
+         ->
+          let writes =
+            match writing with
+            | No_Write -> (* When must yet replace the head *)
+               MyList.make (encoding.nb_bits -1) (just_move Left)
+
+            | Write(symbol) -> (* In order to reduce the number of head moves, bits are written in opposite ordrer from right to left *)
+               let write_symbols = (encode_symbol_wrt encoding symbol) |> List.rev
+               and write_moves   = (MyList.make (encoding.nb_bits -1) Left ) @ [Here]
+               in List.map
+                    (fun (symbol,move) -> Action(RWM(Match(ANY),Write(symbol),move)))
+                    (MyList.zip write_symbols write_moves)
+          and moves = match moving with
+            | Here -> []
+            | _ -> MyList.make encoding.nb_bits (just_move moving)
+          in 
+          let read_transitions = emulate_reading_wrt encoding (State.initial,istate) reading
+          and write_move_transition =  (istate, Seq (writes @ moves), State.accept)
+          in
+          { Turing_Machine.nop with transitions = read_transitions @ [ write_move_transition ] }
+
+          
   let make_simulator : Alphabet.t -> simulator = fun alphabet ->
     let encoding = build_encoding alphabet in
     let decoding = reverse encoding 
@@ -439,7 +534,7 @@ module Binary_Emulator = struct
     { name = "Binary" ;
       encoder = encode_wrt encoding ;
       decoder = decode_wrt decoding ;
-      emulator = emulate_action_wrt encoding
+      emulator = emulate_action_wrt encoding 
     }
 
 end
@@ -450,10 +545,40 @@ end
 
 open Alphabet
 
+
+let demo4: unit -> unit = fun () ->
+  let loggers = [] 
+  and alphabet = Alphabet.make [O;Z;S;U;C]
+  in let emulators =
+       [
+         Binary_Emulator.make_simulator alphabet
+       ]
+     in List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
+          [
+            Configuration.make (TM_Basic.test_TM01)
+              [ Band.make "Data" alphabet [O;Z;Z;S;Z;U;S;U;Z;S;U;U;C] ]
+          ]
+
+      
+let demo3: unit -> unit = fun () ->
+  let loggers = [] 
+  and alphabet = Alphabet.full
+  in let emulators =
+       [
+         Binary_Emulator.make_simulator alphabet
+       ]
+     in List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
+          [
+            Configuration.make (TM_Basic.generic_dec alphabet.symbols)
+              [ Band.make "Data" alphabet [F;L;U;T;Exc;D;Z;U;T;D;Acc;L;O;R;S] ]
+          ]
+
+
 let demo2: unit -> unit = fun () ->
   let loggers = [] 
   and alphabet4 = Alphabet.make [I 1;I 2;I 3;I 4]
-  in let emulators = [
+  in let emulators =
+       [
          (* BitVector_Emulator.make_simulator alphabet4 *)
          Binary_Emulator.make_simulator alphabet4
        ]
@@ -480,6 +605,8 @@ let demo1: unit -> unit = fun () ->
 
 let demo: unit -> unit = fun () ->
   begin
-    demo1() ; 
-    (* demo2() * Binary_Emulator IS UNDER TESTING *)
+    (* demo1() ; *)
+    (* demo2() ;  Binary_Emulator IS UNDER TESTING *)
+    (* demo3() ; *)
+    demo4()
   end

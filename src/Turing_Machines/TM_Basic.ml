@@ -137,7 +137,7 @@ let incr: Turing_Machine.t =
       ]
   }
   
-
+  
 let decr: Turing_Machine.t =
   let init = nop.initial and accept = nop.accept and reject = nop.reject in
   let unit = State.next_from init in
@@ -159,28 +159,6 @@ let decr: Turing_Machine.t =
 	
 	(back , Action( RWM (Match(VAL Z), Write U , Left )), back) ;
 	(back , Action( RWM (Match(VAL B), No_Write, Right)), accept) 
-      ]
-  }
-
-
-
-let dummy: Turing_Machine.t =
-  let z = Bit.zero
-  and u = Bit.unit in
-  let init   = nop.initial
-  and accept = nop.accept 
-  in
-  { nop with
-    name = "dummy" ;
-    transitions = 
-      [ (init, Action( RWM (Match(VAL u), No_Write, Right)), Q 1) ;
-	(init, Action( RWM (Match(VAL z), Write u , Here )), Q 2) ;
-        
-	(Q 2 , Action( RWM (Match(VAL u), No_Write, Left )), Q 2) ;
-	(Q 2 , Action( RWM (Match(VAL z), No_Write, Right)), Q 3) ;
-        
-	(Q 3 , Action( RWM (Match(VAL u), Write z , Right)), init) ;
-	(Q 3 , Action( RWM (Match(VAL z), No_Write, Here )), accept) 
       ]
   }
 
@@ -236,4 +214,56 @@ let generic_swap: symbols -> Turing_Machine.t = fun symbols ->
     name = "swap_" ^ (Pretty.set Symbol.to_ascii symbols) ; 
     transitions = generic_transitions
   }
-      
+
+
+
+let generic_dec: symbols -> Turing_Machine.t = fun symbols ->
+  let init   = nop.initial and accept = nop.accept 
+  in let generic_transitions =
+       Transition.foreach_symbol_of symbols (BUT B) (fun s1 ->
+           (Transition.foreach_symbol_of symbols (BUT B) (fun s2 ->
+                [ (init      , Action(RWM(Match(VAL s1), Write T , Right)), Qs(1,[s1])) ;
+                  (Qs(1,[s1]), Action(RWM(Match(VAL s2), Write s1, Right)), Qs(1,[s2])) ;
+                  (Qs(1,[s1]), Action(RWM(Match(VAL B), Write s1, Right)), accept)
+                ]
+         )))
+     in 
+     { nop with
+       name = "dec_TM" ;
+       transitions =  [ (init, Action(RWM(Match(VAL B), No_Write, Here)), State.reject) ] @ generic_transitions
+     }
+
+  
+(* DUMMY Turing Machines JUST FOR TESTING THE ENGINE *)
+
+
+  let dummy: Turing_Machine.t =
+  let z = Bit.zero
+  and u = Bit.unit in
+  let init   = nop.initial and accept = nop.accept 
+  in
+  { nop with
+    name = "dummy" ;
+    transitions = 
+      [ (init, Action( RWM (Match(VAL u), No_Write, Right)), Q 1) ;
+	(init, Action( RWM (Match(VAL z), Write u , Here )), Q 2) ;
+        
+	(Q 2 , Action( RWM (Match(VAL u), No_Write, Left )), Q 2) ;
+	(Q 2 , Action( RWM (Match(VAL z), No_Write, Right)), Q 3) ;
+        
+	(Q 3 , Action( RWM (Match(VAL u), Write z , Right)), init) ;
+	(Q 3 , Action( RWM (Match(VAL z), No_Write, Here )), accept) 
+      ]
+  }
+
+
+let test_TM01: Turing_Machine.t =
+  let init = nop.initial and accept = nop.accept in 	
+  { nop with
+    name = "incr_vec" ;
+    transitions =
+      [ (init, Action(RWM( Match(IN[O;S;C]), No_Write, Right)), init) ;
+        (init, Action(RWM( Match(IN[Z;U])  , Write B , Right)), init) ;
+        (init, Action(RWM( Match(VAL B)    , No_Write, Here )), accept)
+      ]
+  }

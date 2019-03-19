@@ -101,7 +101,7 @@ module Instruction =
 	      (zip instructions bands)
 	)
 
-	
+      
     (* PRETTY PRINTING *)
 	
     let rec to_ascii: t -> string = fun instruction ->

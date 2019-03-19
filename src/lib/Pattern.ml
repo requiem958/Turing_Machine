@@ -43,8 +43,8 @@ module Pattern =
 	  | ANY -> true
 	  | VAL a -> a = a'
 	  | BUT a -> a <> a'
-	  | IN  aS -> List.mem a' aS
-	  | OUT aS -> not (List.mem a' aS)
+	  | IN  aSet -> List.mem a' aSet
+	  | OUT aSet -> not (List.mem a' aSet)
 
 
    (* PRETTY PRINTING *)
@@ -58,7 +58,7 @@ module Pattern =
 	 | OUT aS -> "~{" ^ (String.concat "," (List.map pp aS)) ^ "}"
 
 
-    let (to_html_wrt: ('a -> string) -> Html.options -> 'a pattern -> Html.content) = fun pp _ pattern ->
+   let (to_html_wrt: ('a -> string) -> Html.options -> 'a pattern -> Html.content) = fun pp _ pattern ->
 	  (to_ascii_wrt pp pattern)
 	    
     (* user *)
