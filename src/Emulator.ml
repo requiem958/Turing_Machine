@@ -459,35 +459,42 @@ module Binary_Emulator = struct
        The binary tree is used to represent the set of binary words and to share common prefixes *)
         
   module BTree = Binary_Tree.Made_Of(Bit)
-               
-  let make_node_from: State.t -> Bit.t -> State.t = fun state bit ->
-    match state with
-    | Q(i) -> Qs(i,[bit])
-    | Qs(i,bits) -> Qs(i,bits@[bit])
-    | Qc(s,ints) -> Qc(s,ints@[if bit=Bit.zero then 0 else 1])
 
+  let make_node_from: State.t -> BTree.label -> State.t = fun state label ->
+    let bit =
+      match label with
+      | BTree.Any     -> A
+      | BTree.Bit bit -> bit
+    in match state with
+       | Q(i) -> Qs(i,[bit])
+       | Qs(i,bits) -> Qs(i,bits@[bit])
+       | Qc(s,ints) -> Qc(s,ints@[if bit=Bit.zero then 0 else if bit=Bit.unit then 1 else 2 ])
+                     
 
   let make_reading_TM: encoding -> State.t * State.t -> Bits.t pattern -> Transition.t list 
     = fun encoding (source,target) word_pattern
-    -> match word_pattern with
-       | IN words 
-         -> let edges =
-              (BTree.build_from words)
-              |> (BTree.to_graph_with make_node_from source (Some target))
-            in 
-            List.map
-              (fun (src,bit,tgt) ->
-                let move = if (tgt = target) then Here else Right
-                in let action = RWM( Match(VAL(bit)), No_Write, move)
-                in (src, Action(action), tgt)
-              )
-              edges
-      (* FIXME TODO using Turing_mahcine.complementary 
-       | BUT word -> 
-       | OUT words -> 
-       *)
-            
-        
+    -> let (good,words) =
+         match word_pattern with
+         | IN words  -> (true , words )
+         | BUT word  -> (false, [word])
+         | OUT words -> (false, words )
+       in
+       let binary_tree = BTree.build_from words
+       in let edges =
+            if good
+            then BTree.to_complete_graph_with make_node_from source target       State.reject binary_tree
+            else BTree.to_complete_graph_with make_node_from source State.reject target       binary_tree
+          in edges
+             |> (List.map
+                   (fun (src,label,tgt) ->
+                     let move = if (tgt = target || tgt = State.reject) then Here else Right
+                     and pattern = match label with
+                       | BTree.Any     -> ANY
+                       | BTree.Bit bit -> VAL(bit)
+                     in let action = RWM( Match(pattern), No_Write, move)
+                        in (src, Action(action), tgt))
+                )
+               
   let (emulate_reading_wrt: encoding -> State.t * State.t -> reading -> Transition.t list) = fun encoding (source,target) ->
     function Match(pattern) ->
               let word_pattern = Pattern.map (encode_symbol_wrt encoding) pattern
@@ -548,7 +555,7 @@ open Alphabet
 
 let demo4: unit -> unit = fun () ->
   let loggers = [] 
-  and alphabet = Alphabet.make [O;Z;S;U;C]
+  and alphabet = Alphabet.make [O;Z;S;U;C;A;T]
   in let emulators =
        [
          Binary_Emulator.make_simulator alphabet
@@ -557,6 +564,10 @@ let demo4: unit -> unit = fun () ->
           [
             Configuration.make (TM_Basic.test_TM01)
               [ Band.make "Data" alphabet [O;Z;Z;S;Z;U;S;U;Z;S;U;U;C] ]
+          ;
+            Configuration.make (TM_Basic.test_TM02)
+              [ Band.make "Data" alphabet [O;A;T;S;Z;U;S;U;Z;S;U;U;C] ]
+
           ]
 
       

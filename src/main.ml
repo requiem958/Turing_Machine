@@ -9,14 +9,10 @@
   
 (* DEMO *)
 
-open Binary_Tree
-open Binary_Tree.Demo
-let _ = Binary_Tree.Demo.demo()
 
-let _ = Emulator.demo ()
 (*      
 
-
+let _ = Emulator.demo ()
 
 let _ = Demo.demo ()
 

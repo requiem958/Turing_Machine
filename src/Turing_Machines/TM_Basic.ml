@@ -260,10 +260,23 @@ let generic_dec: symbols -> Turing_Machine.t = fun symbols ->
 let test_TM01: Turing_Machine.t =
   let init = nop.initial and accept = nop.accept in 	
   { nop with
-    name = "incr_vec" ;
+    name = "erase_vec_01" ;
     transitions =
       [ (init, Action(RWM( Match(IN[O;S;C]), No_Write, Right)), init) ;
         (init, Action(RWM( Match(IN[Z;U])  , Write B , Right)), init) ;
         (init, Action(RWM( Match(VAL B)    , No_Write, Here )), accept)
       ]
   }
+
+
+let test_TM02: Turing_Machine.t =
+  let init = nop.initial and accept = nop.accept in 	
+  { nop with
+    name = "erase_vec_02" ;
+    transitions =
+      [ (init, Action(RWM( Match(IN[O;S;C])   , No_Write, Right)), init) ;
+        (init, Action(RWM( Match(OUT[O;S;C;B]), Write B , Right)), init) ;
+        (init, Action(RWM( Match(VAL B)       , No_Write, Here )), accept)
+      ]
+  }
+    

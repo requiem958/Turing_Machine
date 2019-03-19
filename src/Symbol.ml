@@ -18,6 +18,7 @@
 
 
 type symbol =
+  | A 
   | B (* Blank *)
 
   | T (* True  *)
@@ -71,6 +72,7 @@ module Symbol =
 
     let rec verbatim : t -> string
       = function
+      | A -> "A"
       | B -> "B"
 
       | F -> "F"
@@ -104,6 +106,7 @@ module Symbol =
 
     let rec to_ascii : symbol -> string
       = function
+      | A -> "?"
       | B -> "_"
 
       | F -> "F"

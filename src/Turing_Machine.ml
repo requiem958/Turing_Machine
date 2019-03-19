@@ -31,7 +31,7 @@ open Action
 open Html
 open Pretty
 
-
+open MySet
    
 (** Types *)  
   
@@ -136,10 +136,11 @@ module Transition =
     let (nop: State.t -> State.t -> transition) = fun source target ->  (source, Action(Nop), target)
 
 
-    (* INSTANCIATON of generic transitions (PROJECT 2015) *)
+    (* INSTANCIATON of generic transitions *)
 		    
-    let (foreach_symbol_of: 'a list -> 'a Pattern.t -> ('a -> transitions) -> transitions) = fun alphabet pattern create_transitions_for ->
-	  let rec
+    let (foreach_symbol_of: 'a list -> 'a Pattern.t -> ('a -> transitions) -> transitions)
+      = fun alphabet pattern create_transitions_for
+      -> let rec
 	      (instantiate_transitions_foreach_symbol_in: 'a list -> transitions) = fun symbols  ->
 		    match symbols with
 		    | [] -> []
@@ -150,7 +151,22 @@ module Transition =
 	  in
 	    instantiate_transitions_foreach_symbol_in (Pattern.enumerate_symbols_of alphabet pattern)
 
-	      
+          
+    (* NEEDED FOR BUILDING COMPLEMENTARY of a STANDARD 1 BAND DETERMINISTIC DECIDING TURING MACHINE*)
+          
+    let swap_accepting_status: transition -> transition = fun (source,action,target) ->
+      let target = 
+        if target = State.accept then State.reject
+        else if target = State.reject then State.accept
+        else target
+      in (source,action,target)
+
+    let get_pattern: transition -> Symbol.t Pattern.t = fun (_,instruction,_) ->
+      match instruction with
+      | Action action -> Action.get_pattern action
+                       
+
+       
    (* PRETTY PRINTING *)
 
     let (to_ascii: t -> string) = fun (source,instruction,target) ->
@@ -213,8 +229,72 @@ module Turing_Machine =
       | Pretty.Ascii -> to_ascii
    (* | Pretty.Dot   -> TODO *)
 
+
+    (* INFORMATION on STATES of a TURING MACHINE *)
+
+    let targets_of: transitions -> State.t set = fun transitions ->
+      MySet.union MySet.empty (List.map (fun (_,_,q) -> q) transitions)
+      
+    let sources_of: transitions -> State.t set = fun transitions ->
+      MySet.union MySet.empty (List.map (fun (q,_,_) -> q) transitions)
+      
+    let states_of: transitions -> State.t set = fun transitions ->
+      MySet.union (sources_of transitions) (targets_of transitions) 
+      
+    let all_states_of: turing_machine -> State.t set = fun tm ->
+      MySet.union [ State.initial ; State.accept ; State.reject ] (states_of tm.transitions)
+      
+    let number_of_states: turing_machine -> int = fun tm ->
+      List.length (all_states_of tm)
+
+      
+    (* INFORMATION on TRANSITONS of a TURING MACHINE 
+      
+    type 'state selection = 
+      | From of 'state list
+      | To   of 'state list
+
+    let get_transitions: State.t selection -> transitions -> transitions =  fun selection transitions -> 
+      match selection with
+      | From states -> List.filter (fun (q,_,_) -> List.mem q states) transitions 
+      | To states   -> List.filter (fun (_,_,q) -> List.mem q states) transitions 
+                       *)
+
+
+    (* COMPLETION of a STANDARD 1 BAND TURING MACHINE *)
+
+    let completion: Alphabet.t -> turing_machine -> turing_machine = fun alphabet tm ->
+      let states = states_of tm.transitions in
+      let rejecting_transitions =
+        MyList.foreach_in states (fun state ->
+            let transitions = List.filter (fun (src,_,_) -> src = state) tm.transitions
+            in 
+            let addressed_symbols = transitions
+                                    |> (List.map Transition.get_pattern)
+                                    |> (List.map (Pattern.enumerate_symbols_of alphabet.symbols))
+                                    |> MySet.big_union 
+            in let missing_symbols = MySet.minus alphabet.symbols addressed_symbols
+               in
+               if missing_symbols = MySet.empty
+               then []
+               else [ (state, Action(RWM( Match(IN missing_symbols), No_Write, Here)), State.reject) ]
+          )
+      in { tm with
+           name = String.concat "" [ "Complete(" ; tm.name ; ")" ] ;
+           transitions = rejecting_transitions @ tm.transitions
+         }
+       
+
+    (* The complementary of a deciding TM *)
+      
+    let swap_accepting_status: turing_machine -> turing_machine = fun tm -> 
+      { tm with 
+	name = "Comp(" ^ tm.name ^ ")" ;
+	transitions = List.map Transition.swap_accepting_status tm.transitions
+      }  
+
+
                       
-		
     (* IMPERATIVE FEATURES for reusing existing turing machine *) 	    
 		
     class collection_of_turing_machine =

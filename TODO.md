@@ -1,8 +1,9 @@
 TODO
 ====
 
-## replace B by Nil ?
+## Dot ouput of a TM (see. Automata)
 
+## replace B by Nil ?
 
 ## Simulation d'une MT multi-bandes par une MT standard
 

@@ -93,7 +93,7 @@ module Pattern =
 
    (* ENUMERATION for generic transitions *)
 		    
-    let (enumerate_symbols_of: 'a list -> 'a pattern -> 'a list) = fun alphabet pattern ->
+    let enumerate_symbols_of: 'a list -> 'a pattern -> 'a list = fun alphabet pattern ->
 	  match pattern with
 	  | ANY -> alphabet
 	  | VAL a -> [a]

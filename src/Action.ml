@@ -35,19 +35,18 @@ type action =
   | Simultaneous of action list (* simultaneous actions on multiple bands *)
   | Nop (* no operation *)
 
-
       
 module Reading =
   (struct
     type t = reading
 	  
-    let (to_ascii: t -> string) = function Match(pattern) ->
-	Pattern.to_ascii_wrt Symbol.to_ascii pattern
+    let to_ascii: t -> string = function
+      | Match(pattern) -> Pattern.to_ascii_wrt Symbol.to_ascii pattern
+                 
+    let map: (Symbol.t -> Symbol.t) -> t -> t = fun f reading ->
+      match reading with
+      | Match pattern -> Match (Pattern.map f pattern)
 
-    let (map: (Symbol.t -> Symbol.t) -> t -> t) = fun f reading ->
-	  match reading with
-	  | Match pattern -> Match (Pattern.map f pattern)
-		    
   end)
 
 
@@ -86,14 +85,14 @@ module Action =
     type t = action
 
     let zip: action list -> Band.t list -> (action * Band.t) list =  Band.zip_complete_with Nop ;;
-    
-    (* USELESS
-    let assign_action_wrt: Band.indexes -> action list -> Band.t list -> (action * Band.t) list =  Band.assign_indexed_operation_with_default Nop
 
-    let select: Band.indexes -> band list -> band list = fun indexes bands ->
-      List.map (fun i -> List.nth bands i) indexes
-     *)
-    
+    (* INFORMATION on READING PATTERN of STANDARD 1 BAND TURING MACHINE *)
+
+    let get_pattern: action -> Symbol.t Pattern.t = function
+      | Nop -> ANY
+      | RWM(Match(pattern),_,_) -> pattern
+                          
+
     (* ENABLED ONE ACTION on ONE BAND *)	
 
     let (is_enabled_on_this: Band.t -> action -> bool) = fun band action ->
@@ -137,7 +136,7 @@ module Action =
 	  | Nop -> band
 	  | RWM (_,writing,moving) -> band |> (do_write writing) |> (do_move moving)
 
-
+                                    
     (* PERFORMING INDEXED ACTIONS on MULTIPLE BANDS *)
                                     
     let (perform:  action -> Band.t list -> Band.t list) = fun action bands ->
