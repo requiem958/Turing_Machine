@@ -23,17 +23,19 @@ module Made_Of =
                                         
     let rec make_from: bit list -> t = fun bits ->
       match bits with
-      | [] -> NilTree
+      | [] -> BinTree(NilTree,NilTree)
       | b::bs ->
-         if b=Bit.zero then BinTree(make_from bs, NilTree) else BinTree(NilTree, make_from bs)
+         if b=Bit.zero
+         then BinTree(make_from bs, NilTree)
+         else BinTree(NilTree, make_from bs)
         
         
-    let add: t -> bit list -> t = fun btree bits ->
-      merge btree (build_from bits)
+    let add_to: t -> bit list -> t = fun btree bits ->
+      merge btree (make_from bits)
       
       
     let build_from: word list -> binaryTree = fun words ->
-      List.fold_left add NilTree words
+      List.fold_left add_to NilTree words
       
       
     let distrib: 'a -> ('a list) list -> ('a list) list = fun bit words ->
@@ -48,7 +50,7 @@ module Made_Of =
            -> (distrib Bit.zero (to_words l_tree)) @ (distrib Bit.unit (to_words r_tree))
             
     type 'node edge = 'node * bit * 'node
-    type 'node edges = ('ndoe edge) list
+    type 'node edges = ('node edge) list
     type 'node graph = 'node * 'node edges (* graph = (entry_node, edges) *)
                      
     let make_edge: 'node -> bit -> 'node graph option  -> 'node graph option = fun new_node bit graph ->
@@ -65,15 +67,19 @@ module Made_Of =
          
          
     let to_graph_with
-          (mk_node_from: 'node -> bit -> 'node)
-          (initial_node: 'node)
-          (final_node  : 'node)
-          (btree       : t)
-        : 'node graph option
+          (mk_node_from  : 'node -> bit -> 'node)
+          (initial_node  : 'node)
+          (opt_final_node: 'node option)
+          (btree         : t)
+        : 'node edges 
       = let rec to_graph_rec: 'node -> t -> 'node graph option = fun current_node btree ->
           match btree with
           | NilTree -> None
-          | BinTree(NilTree,NilTree) -> Some(final_node, []) 
+          | BinTree(NilTree,NilTree)
+            -> (match opt_final_node with
+                | None            -> Some(current_node,[])
+                | Some final_node -> Some(final_node, [])
+               )
           | BinTree(l_tree,r_tree)
             ->
              let l_root_node = mk_node_from current_node Bit.zero
@@ -82,35 +88,57 @@ module Made_Of =
                   (make_edge current_node Bit.zero (to_graph_rec l_root_node l_tree))
                   (make_edge current_node Bit.unit (to_graph_rec r_root_node r_tree))
               
-        in to_graph_rec initial_node btree 
-
+        in match to_graph_rec initial_node btree with
+           | None -> []
+           | Some(_,edges) -> edges
+                            
   end
+
+
+(* DEMO
+
+open Binary_Tree
+open Binary_Tree.Demo
+let _ = Binary_Tree.Demo.demo()
+m 
+*)
   
-let make_node_from: State.t -> Bit.t -> State.t = fun state bit ->
-  match state with
-  | Q(i) -> Qs(i,[bit])
-  | Qs(i,bits) -> Qs(i,bits@[bit])
-  | Qc(s,ints) -> Qc(s,ints@[if bit=Bti.zero then 0 else 1])
-                
-
-
 module Demo =
   struct
 
-    module Bit = Bit_Vector.Bit_as_Int
-    module BTree = Binary_Tree.Made_Of(Bit)
+    module Bit =
+      struct
+        type t = int
+        let (zero:t) = 0
+        let (unit:t) = 1
+        let (pretty: t -> string) = string_of_int
+      end
 
-    let make_node_from: int -> Bit.t -> int = fun int bit ->
-      if bit = Bit.zero then int+2 else int+1
-                        
+    module BinaryTree = Made_Of(Bit)
+
+    type node =
+      | W of Bit.t list
+      
+    let make_node_from: node -> Bit.t -> node = fun node bit ->
+      match node with
+      | W bits -> W (bits @ [bit])
+
+      
     let demo: unit -> 'a = fun () ->
-      let btree = build_from [[0;1];[0;0];[0;1];[1;0]]
-      and initial_node = 0
-      and final_node = -1
-      in 
-      (btree, to_graph_with make_node_from
-                initial_node
-                final_node
-                btree)
+      let z = Bit.zero
+      and u = Bit.unit
+      in let words = [[z;u;z];[z;u;z];[z;z];[u;u;z];[u;z]]
+         in
+         let btree = BinaryTree.build_from words
+         and initial_node = W []
+         and opt_final_node = None
+         in
+         (List.map BinaryTree.make_from words,
+          btree,
+          BinaryTree.to_words btree,
+          BinaryTree.to_graph_with make_node_from
+            initial_node
+            opt_final_node
+            btree)
     end
     
