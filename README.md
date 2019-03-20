@@ -34,9 +34,9 @@ Those constructions have been (partially) described in books but never implement
 
 ## Available outputs
 
-### (demo/run/)[demo/run/] contains html files
+### [demo/run/](demo/run/) contains html files
 
-- The run of the 4-states Busy Beaver ([107 steps](demo/run/BB4.html))
+- The run of the 4-states Busy Beaver ([107 steps](demo/run/TM_BB4_1xBand.html))
 
 - The run of a TM which erases the content of a vector while keeping the structure (..,..)
 
@@ -45,7 +45,7 @@ Those constructions have been (partially) described in books but never implement
 - The run of a 2-bands Turing Machine performing the xor of two bands
 
 
-### (demo/dot/)[demo/dot/] contains some control flow graphs in `.dot` format
+### [demo/dot/](demo/dot/) contains some control flow graphs in `.dot` format
 
 - the 4-states Busy Beaver (BB4.dot)
 
