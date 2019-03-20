@@ -9,9 +9,9 @@ Michael PÉRIN, Verimag / Univ. Grenoble-Alpes
 Those constructions have been (partially) described in books but never implemented:
 
 - Emulation of a TM operating on an n-symbols alphabet by a TM operating on binary alphabet (2017)
-- Emulation of a n-Bands TM by a single-band TM (2021)
 - The Universal Turing Machine (2019)
-- The Universal Scheduler running two Turing Machine one step each
+- Emulation of a n-Bands TM by a single-band TM (2021 ?)
+- The Universal Scheduler running two Turing Machine one step each (2023 ?)
 
 
 ## Already available
@@ -27,14 +27,14 @@ Those constructions have been (partially) described in books but never implement
 
 - Some examples of [single-band Turing Machines](/src/Turing_Machines/TM_Basic.ml)
 
-- The known [busy beavers](/src/Turing_Machines/TM_BusyBeaver.ml)
+- The known [busy beavers](/src/Turing_Machines/TM_Busy_Beaver.ml)
 
 - Some examples of [two-bands Turing Machines](src/Turing_Machines/TM_2Bands.ml)
 
 
 ## Available outputs
 
-### ``demo/run/`` contains html files
+### (demo/run/)[demo/run/] contains html files
 
 - The run of the 4-states Busy Beaver ([107 steps](demo/run/BB4.html))
 
@@ -45,7 +45,7 @@ Those constructions have been (partially) described in books but never implement
 - The run of a 2-bands Turing Machine performing the xor of two bands
 
 
-### ``demo/dot/`` contains some control flow graphs in `.dot` format
+### (demo/dot/)[demo/dot/] contains some control flow graphs in `.dot` format
 
 - the 4-states Busy Beaver (BB4.dot)
 
