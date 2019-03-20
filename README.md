@@ -11,7 +11,7 @@ Those constructions have been (partially) described in books but never implement
 - Emulation of a TM operating on an n-symbols alphabet by a TM operating on binary alphabet (2017)
 - The Universal Turing Machine (2019)
 - Emulation of a n-Bands TM by a single-band TM (2021 ?)
-- The Universal Scheduler running two Turing Machine one step each (2023 ?)
+- The Universal Scheduler running two Turing Machines one step each (2023 ?)
 
 
 ## Modules already available
@@ -36,11 +36,8 @@ Those constructions have been (partially) described in books but never implement
 ### [demo/run/](demo/run/) contains html files
 
 - The run of the 4-states Busy Beaver (107 steps)
-
 - The run of a TM which erases the content of a vector while keeping the structure (..,..)
-
 - The run of its binary version operating on the 2 symbols alphabet {T,F}
-
 - The run of a 2-bands Turing Machine performing the xor of two bands
 
 
