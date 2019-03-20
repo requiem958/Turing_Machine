@@ -117,16 +117,22 @@ module Instruction =
     let rec to_ascii: t -> string = fun instruction ->
       match instruction with
       | Action action -> Action.to_ascii action
-      | Call tm_name -> tm_name
-      | Run tm -> tm.name
+      | Call tm_name ->  tm_name
+      | Run tm       ->  tm.name
       | Seq instructions -> Pretty.brace (String.concat " ; " (List.map to_ascii instructions))
       | Parallel instructions -> Pretty.bracket (String.concat " || " (List.map to_ascii instructions))
 		    
     let to_html: Html.options -> instruction -> Html.cell = fun options instruction ->
-	  Html.cell options (to_ascii instruction)
+      Html.cell options (to_ascii instruction)
 
-    let to_dot: t -> string = to_ascii      
-                              
+    let rec to_dot: t -> string = fun instruction ->
+      match instruction with
+      | Action action -> Action.to_dot action
+      | Call tm_name -> String.concat "" ["run(" ; tm_name ; ")" ]
+      | Run tm       -> String.concat "" ["run(" ; tm.name ; ")" ]
+      | Seq instructions -> Pretty.brace (String.concat " ; " (List.map to_dot instructions))
+      | Parallel instructions ->String.concat " || " (List.map to_dot instructions)
+
     (* USER *)
 
     let pretty: t -> string = fun t ->
@@ -194,20 +200,20 @@ module Transition =
       |> (List.map to_ascii)
       |> (String.concat ";")
 
-    let to_dot: t -> Dot.labelled_node * Dot.transition list = fun (src,instruction,tgt) ->
+    let to_dot: t -> Dot.labelled_node * Dot.transition * Dot.transition = fun (src,instruction,tgt) ->
       let src_node = State.to_dot src
       and tgt_node = State.to_dot tgt    
       in let instruction_node  = String.concat "_" [ src_node ; Instruction.id instruction ]
          and instruction_label = Instruction.to_dot instruction           
          in let dot_labelled_node = (instruction_node, instruction_label) 
-            and dot_transitions = [ (src_node, "", instruction_node) ; (instruction_node, "", tgt_node) ]
-            in
-            (dot_labelled_node, dot_transitions)
+            and link = (src_node, "", instruction_node)
+            and edge = (instruction_node,"", tgt_node) 
+            in (dot_labelled_node, link, edge)
 
-    let to_dot_many: t list -> Dot.labelled_node list * Dot.transition list = fun transitions ->
+    let to_dot_many: t list -> Dot.labelled_node list * Dot.transition list * Dot.transition list = fun transitions ->
       transitions 
       |> (List.map to_dot)
-      |> (List.fold_left (fun (nodes,transitions) (n,ts) -> (n::nodes, ts @ transitions)) ([],[]))
+      |> (List.fold_left (fun (nodes,links,edges) (n,l,e) -> (n::nodes, l::links, e::edges)) ([],[],[]))
       
     (* USER *)
 
@@ -272,7 +278,7 @@ module Turing_Machine =
 
     let to_dot : turing_machine -> string = fun tm ->
       let control_states = List.map State.to_dot (control_states_of tm)
-      and (instruction_nodes,transitions) = Transition.to_dot_many tm.transitions
+      and (instruction_nodes,links,edges) = Transition.to_dot_many tm.transitions
       in Dot.digraph
            tm.name
            [ State.to_dot tm.initial ]
@@ -280,33 +286,38 @@ module Turing_Machine =
            [ State.to_dot tm.reject  ]
            control_states
            instruction_nodes
-           transitions
-       
+           links
+           edges
+
+    (* OUTPUT in A FILE *)
+
+    type path = string
+                  
+    let i_output_to_dot_file_named (directory:string) (filename:string) (machine:t) : path =
+      File.i_output_in
+        (directory ^ filename,"dot")
+        (to_dot machine)
+                  
+    let to_dot_file: turing_machine -> path = fun tm ->  i_output_to_dot_file_named "_dot/" tm.name tm
+
+    let export: turing_machine -> turing_machine = fun tm ->
+      begin
+        let _ = to_dot_file tm in () ;
+        tm
+      end
       
-(* I'M HERE
-
-  let i_output_to_dot_file_named (directory:string) (filename:string) (machine:t) : File.filename =
-  File.output_in
-    (directory ^ filename,"dot")
-    (to_dot machine)
-
- let i_output_to_dot_file (directory:string) (machine:t) : File.filename =
-  i_output_to_dot_file directory mahcine.name machine
-
- *)
                                                                             
-    (* user *)
+    (* USER *)
 	    
     let pretty (* user *) : t -> string =
       match Pretty.get_format() with
       | Pretty.Html  -> (to_html [])
       | Pretty.Ascii -> to_ascii
-    (* | Pretty.Dot   -> Dot.to_dot_string *)
+      | Pretty.Dot   -> to_dot_file 
 
 
 
     (* COMPLETION of a STANDARD 1 BAND TURING MACHINE *)
-
       
     let (* NOT TESTED *) completion: Alphabet.t -> turing_machine -> turing_machine = fun alphabet tm ->
       let states = all_states_of tm in

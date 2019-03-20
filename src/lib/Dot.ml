@@ -53,26 +53,28 @@ let digraph
       (rejecting_states  : node list)
       (control_states    : node list)
       (instruction_nodes : (node * label) list)
-      (transitions       : transition list)
+      (links             : transition list)
+      (edges             : transition list)
   =
   String.concat "\n  "
     [ "digraph cfg{" 
     ; "node [shape=plaintext]; // MACHINE NAME" 
     ;    dot_labelled_node [ "fontname=comic" ; "fontsize=18" ] (name,name)
-    ; "\n node [shape=circle]; // STATES" 
-    ; "\n node [peripheries=1, style=bold]; // INITIAL STATES" 
+    ; "\n node [shape=circle, fontsize=10]; // STATES" 
+    ; "\n node [peripheries=1, style=filled, color=black, fontcolor=white]; // INITIAL STATES" 
     ;    dot_sequence dot_node initial_states
-    ; "\n node [peripheries=2, style=solid , color=green, fontcolor=black]; // ACCEPTING STATES" 
-    ;    dot_sequence dot_node acception_states
+    ; "\n node [peripheries=1, style=filled , color=green, fontcolor=green]; // ACCEPTING STATES" 
+    ;    dot_sequence dot_nolabel_node acception_states
     ; "\n node [peripheries=1, style=filled, color=red  , fontcolor=white]; // REJECTING STATES" 
-    ;    dot_sequence dot_node rejecting_states
-    ; "\n node [shape=circle, peripheries=1, style=solid, color=black, fontcolor=blue]; // OTHER CONTROL STATES" 
-    ;    dot_sequence dot_nolabel_node control_states
-    ; "\n node [shape=box, peripheries=1] // INSTRUCTION NODES"
+    ;    dot_sequence dot_nolabel_node rejecting_states
+    ; "\n node [peripheries=1, style=filled , color=gray, fontcolor=black ]; // OTHER CONTROL STATES" 
+    ;    dot_sequence dot_node control_states
+    ; "\n node [shape=box, peripheries=1, style=solid, color=blue , fontcolor=blue, fontsize=14] // INSTRUCTION NODES"
     ;    dot_sequence (dot_labelled_node []) instruction_nodes
     ; "// TRANSITIONS" 
     ;    dot_sequence (fun istate -> (dot_node name) ^ " -> " ^ (dot_node istate)) initial_states
-    ;    dot_sequence (dot_transition []) transitions
+    ;    dot_sequence (dot_transition ["dir=none, color=blue"]) links
+    ;    dot_sequence (dot_transition []) edges
     ; "}"
     ]
   

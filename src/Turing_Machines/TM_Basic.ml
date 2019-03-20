@@ -73,7 +73,8 @@ let most_on_the: Moving.t -> Turing_Machine.t = fun dir ->
     )
   in
   let init = nop.initial and accept = nop.accept in
-  let loop = State.next_from init in	      
+  let loop = State.next_from init
+  in Turing_Machine.export	      
   { nop with
     transitions = [ (init, Action( RWM (Match(ANY), No_Write, dir)), loop) ;
 		    (loop, Action(RWM(Match(BUT B), No_Write, dir)), loop) ;
@@ -90,7 +91,8 @@ let left_most: Turing_Machine.t = Turing_Machine.naming "B?<" (most_on_the Left)
 
 let erase: Turing_Machine.t = 
   let init = nop.initial and accept = nop.accept in
-  let loop = State.next_from init in	
+  let loop = State.next_from init
+  in Turing_Machine.export	
   { nop with
     name = "erase" ;
     transitions =
@@ -103,7 +105,8 @@ let erase: Turing_Machine.t =
 
 let erase_backward: Turing_Machine.t = 
   let init = nop.initial and accept = nop.accept in
-  let loop = State.next_from init in	
+  let loop = State.next_from init
+  in Turing_Machine.export	
   { nop with
     name = "<erase" ;
     transitions =
@@ -115,7 +118,8 @@ let erase_backward: Turing_Machine.t =
 
 
 let neg: Turing_Machine.t =
-  let init   = nop.initial and accept = nop.accept in 	
+  let init   = nop.initial and accept = nop.accept
+  in Turing_Machine.export 	
   { nop with
     name =  "neg" ; 
     transitions = 
@@ -127,7 +131,8 @@ let neg: Turing_Machine.t =
 
 
 let incr: Turing_Machine.t =
-  let init = nop.initial and accept = nop.accept in 	
+  let init = nop.initial and accept = nop.accept
+  in Turing_Machine.export 	
   { nop with
     name =  "incr" ; 
     transitions = 
@@ -142,25 +147,26 @@ let decr: Turing_Machine.t =
   let init = nop.initial and accept = nop.accept and reject = nop.reject in
   let unit = State.next_from init in
   let zero = State.next_from unit in
-  let back = State.next_from zero in
-  { nop with
-    name = "decr" ;
-    transitions = 
-      [ (init, Action( RWM (Match(VAL Z), No_Write, Right)), unit) ;
-	(init, Action( RWM (Match(VAL U), Write Z , Here )), accept) ;
-	(init, Action( RWM (Match(VAL B), No_Write, Here )), reject) ;
+  let back = State.next_from zero
+  in Turing_Machine.export
+       { nop with
+         name = "decr" ;
+         transitions = 
+           [ (init, Action( RWM (Match(VAL Z), No_Write, Right)), unit) ;
+	     (init, Action( RWM (Match(VAL U), Write Z , Here )), accept) ;
+	     (init, Action( RWM (Match(VAL B), No_Write, Here )), reject) ;
+	     
+	     (unit , Action( RWM (Match(VAL B), No_Write, Left )), reject) ;
+	     (unit , Action( RWM (Match(VAL Z), No_Write, Right)), unit) ;
+	     (unit , Action( RWM (Match(VAL U), Write B , Right)), zero) ;
 	
-	(unit , Action( RWM (Match(VAL B), No_Write, Left )), reject) ;
-	(unit , Action( RWM (Match(VAL Z), No_Write, Right)), unit) ;
-	(unit , Action( RWM (Match(VAL U), Write B , Right)), zero) ;
-	
-	(zero , Seq [ Action( RWM (Match(VAL B), No_Write, Left)) ; Action( RWM (Match(VAL B), No_Write, Left)) ], back) ;
-	(zero , Seq [ Action( RWM (Match(BUT B), No_Write, Left)) ; Action( RWM (Match(VAL B), Write  Z, Left)) ], back) ;
-	
-	(back , Action( RWM (Match(VAL Z), Write U , Left )), back) ;
-	(back , Action( RWM (Match(VAL B), No_Write, Right)), accept) 
-      ]
-  }
+	     (zero , Seq [ Action( RWM (Match(VAL B), No_Write, Left)) ; Action( RWM (Match(VAL B), No_Write, Left)) ], back) ;
+	     (zero , Seq [ Action( RWM (Match(BUT B), No_Write, Left)) ; Action( RWM (Match(VAL B), Write  Z, Left)) ], back) ;
+	     
+	     (back , Action( RWM (Match(VAL Z), Write U , Left )), back) ;
+	     (back , Action( RWM (Match(VAL B), No_Write, Right)), accept) 
+           ]
+       }
 
   
 let permut: Alphabet.t -> Turing_Machine.t = fun alphabet ->
@@ -172,7 +178,7 @@ let permut: Alphabet.t -> Turing_Machine.t = fun alphabet ->
   in
   let generic_transitions = MyList.foreach_in permutations (fun (s1,s2) ->
                                 [ (init, Action( RWM (Match(VAL s1),  Write s2, Right)), init) ])
-  in          
+  in Turing_Machine.export         
   { nop with
     name = "permut" ;
     transitions = [ (init, Action( RWM (Match(VAL B), No_Write, Here)), accept) ] @ generic_transitions
@@ -192,7 +198,7 @@ let generic_dup: symbols -> Turing_Machine.t = fun symbols ->
 	  (Qs(3,[s]), Run (second_blank_on_the Left)            , Qs(4,[s])) ; 
 	  (Qs(4,[s]), Action(RWM(Match(VAL(B)), Write s, Right)), init)
       ])
-  in 
+  in Turing_Machine.export
   { nop with
     name = "dup_" ^ (Pretty.set Symbol.to_ascii symbols) ;
     transitions = generic_transitions
@@ -209,7 +215,7 @@ let generic_swap: symbols -> Turing_Machine.t = fun symbols ->
 	      (Qs(1,[s]), Action( RWM (Match(VAL(l)), Write s, Left )), Qs(2,[l])) ;
 	      (Qs(2,[l]), Action( RWM (Match(VAL(B)), Write l, Right)), accept)
       ]))
-  in 
+  in Turing_Machine.export
   { nop with
     name = "swap_" ^ (Pretty.set Symbol.to_ascii symbols) ; 
     transitions = generic_transitions
@@ -227,7 +233,7 @@ let generic_dec: symbols -> Turing_Machine.t = fun symbols ->
                   (Qs(1,[s1]), Action(RWM(Match(VAL B), Write s1, Right)), accept)
                 ]
          )))
-     in 
+     in Turing_Machine.export
      { nop with
        name = "dec_TM" ;
        transitions =  [ (init, Action(RWM(Match(VAL B), No_Write, Here)), State.reject) ] @ generic_transitions
@@ -241,7 +247,7 @@ let generic_dec: symbols -> Turing_Machine.t = fun symbols ->
   let z = Bit.zero
   and u = Bit.unit in
   let init   = nop.initial and accept = nop.accept 
-  in
+  in Turing_Machine.export
   { nop with
     name = "dummy" ;
     transitions = 
@@ -258,15 +264,16 @@ let generic_dec: symbols -> Turing_Machine.t = fun symbols ->
 
 
 let test_TM01: Turing_Machine.t =
-  let init = nop.initial and accept = nop.accept in 	
-  { nop with
-    name = "erase_vec_01" ;
-    transitions =
-      [ (init, Action(RWM( Match(IN[O;S;C]), No_Write, Right)), init) ;
-        (init, Action(RWM( Match(IN[Z;U])  , Write B , Right)), init) ;
-        (init, Action(RWM( Match(VAL B)    , No_Write, Here )), accept)
-      ]
-  }
+  let init = nop.initial and accept = nop.accept
+  in Turing_Machine.export
+       { nop with
+         name = "erase_vec_01" ;
+         transitions =
+           [ (init, Action(RWM( Match(IN[O;S;C]), No_Write, Right)), init) ;
+             (init, Action(RWM( Match(IN[Z;U])  , Write B , Right)), init) ;
+             (init, Action(RWM( Match(VAL B)    , No_Write, Here )), accept)
+           ]
+       }
 
 
 let test_TM02: Turing_Machine.t =

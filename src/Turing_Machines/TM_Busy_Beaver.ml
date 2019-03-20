@@ -25,7 +25,8 @@ let (bb4: Turing_Machine.t) =
   let z = Bit.zero
   and u = Bit.unit in
   let init   = nop.initial
-  and accept = nop.accept in
+  and accept = nop.accept
+  in Turing_Machine.export
   { nop with
     name = "BB4_stops_after_107_steps" ;
     transitions = 
@@ -45,7 +46,8 @@ let (bb5: Turing_Machine.t) =
   let z = Bit.zero
   and u = Bit.unit in
   let init   = nop.initial
-  and accept = nop.accept in	    
+  and accept = nop.accept
+  in Turing_Machine.export	    
   { nop with
     name = "BB5_stops_after_47_176_870_steps" ;
     transitions = 
@@ -67,7 +69,8 @@ let (bb6: Turing_Machine.t) =
   let z = Bit.zero
   and u = Bit.unit in
   let init   = nop.initial
-  and accept = nop.accept in	          
+  and accept = nop.accept
+  in Turing_Machine.export	          
   { nop with
     name = "BB6_discovered_in_june_2010_stops_after_3.515_*_10^18267_steps" ;
     transitions = 

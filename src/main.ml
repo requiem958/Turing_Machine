@@ -10,11 +10,18 @@
 (* DEMO *)
 
 
-(*      
-
 let _ = Emulator.demo ()
 
 let _ = Demo.demo ()
+
+
+let _ = UTM.demo()
+
+(*      
+
+
+
+
 
 let _ = LC_by_MT.demo ()       
 

@@ -53,9 +53,9 @@ module Pattern =
 	 match pattern with
 	 | ANY -> "?"
 	 | VAL a -> pp a
-	 | BUT a -> "~" ^ (pp a)
+	 | BUT a -> "¬" ^ (pp a)
 	 | IN  aS -> "{" ^ (String.concat "," (List.map pp aS)) ^ "}"
-	 | OUT aS -> "~{" ^ (String.concat "," (List.map pp aS)) ^ "}"
+	 | OUT aS -> "¬{" ^ (String.concat "," (List.map pp aS)) ^ "}"
 
 
    let (to_html_wrt: ('a -> string) -> Html.options -> 'a pattern -> Html.content) = fun pp _ pattern ->

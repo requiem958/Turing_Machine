@@ -29,7 +29,7 @@ demarkup = $(MYBIN)/demarkup
 #}_
 
 
-MODULES = lib/Fresh lib/Option lib/Tricks lib/MyList lib/MyString lib/Dot lib/Pretty lib/MySet lib/Bit_Vector lib/Binary_Tree lib/Date lib/Logger lib/Color lib/Html lib/Pattern \
+MODULES = lib/Fresh lib/Option lib/Tricks lib/MyList lib/MyString lib/File lib/Dot lib/Pretty lib/MySet lib/Bit_Vector lib/Binary_Tree lib/Date lib/Logger lib/Color lib/Html lib/Pattern \
 Symbol State Alphabet Band Action Turing_Machine Configuration Execution \
 Turing_Machines/TM_Basic Turing_Machines/TM_2Bands Turing_Machines/TM_Busy_Beaver Universal/UTM Demo \
 Emulator 
@@ -49,7 +49,7 @@ OCAMLI = ledit -h .ledit_history ocaml -I lib -I Turing_Machines -I Lambda_Calcu
 
 # directory needed for logging execution traces
 log_dir = _log
-
+dot_dir = _dot
 
 #_{
 help_teacher:
@@ -74,7 +74,7 @@ cmo: $(ML) main.ml
 	@$(OCAMLC) $(CMA) $(ML) main.ml -o run
 
 
-play: $(log_dir)
+play: $(log_dir) $(dot_dir)
 	@make cmo
 	@echo "#use \"main.ml\";;" > .ledit_history
 	@echo "#use \"Universal/UTM.ml\";;" >> .ledit_history
@@ -82,7 +82,7 @@ play: $(log_dir)
 	@echo "demo();;" >> .ledit_history
 	@$(OCAMLI) $(CMA) $(CMO)
 
-run: $(log_dir)
+run: $(log_dir) $(dot_dir)
 	@make cmo
 	@$(OCAMLC) $(CMA) $(CMO) main.ml -o run
 	@./run
@@ -95,7 +95,7 @@ clean:
 
 clean_all:
 	@make clean
-	@rm -fr $(prj_dir) $(tar_dir) $(log_dir) $(web_dir) *.skl
+	@rm -fr $(prj_dir) $(tar_dir) $(log_dir) $(dot_dir) $(web_dir) *.skl
 
 
 # SOURCE from .mic. files
@@ -193,5 +193,8 @@ $(tar_dir):
 
 $(log_dir):
 	@if test ! -d $(log_dir); then mkdir $(log_dir)/; fi
+
+$(dot_dir):
+	@if test ! -d $(dot_dir); then mkdir $(dot_dir)/; fi
 
 .PHONY: help cmo play run clean

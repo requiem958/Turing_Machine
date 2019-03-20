@@ -54,7 +54,7 @@ let nop: Turing_Machine.t = Turing_Machine.nop
 let neg_TM: Turing_Machine.t =
   let init   = nop.initial
   and accept = nop.accept
-  in 	
+  in Turing_Machine.export	
   { nop with
     name =  "M_neg" ; 
     transitions = 
@@ -79,7 +79,8 @@ let neg_code: machine_code =
 (*** A TM that increases an little-endian binary integer by one unit: incr([n]_2) = [n+1]_2 *)
                           
 let incr_TM: Turing_Machine.t =
-  let init = nop.initial and accept = nop.accept in 	
+  let init = nop.initial and accept = nop.accept
+  in Turing_Machine.export	 
   { nop with
     name =  "M_incr" ; 
     transitions = 
@@ -105,7 +106,8 @@ let decr_TM: Turing_Machine.t =
   let init = nop.initial and accept = nop.accept and reject = nop.reject in
   let unit = State.fresh_from init in
   let zero = State.fresh_from unit in
-  let back = State.fresh_from zero in
+  let back = State.fresh_from zero
+  in Turing_Machine.export	
   { nop with
     name = "M_decr" ;
     transitions = 
@@ -152,7 +154,7 @@ let utm: Turing_Machine.t =
     Transition.foreach_symbol_of Alphabet.utm.symbols (IN [O;Std;Acc;Exc;Z;U]) (fun s ->
 	[ (init, Action( Simultaneous [ Nop ; RWM(Match(VAL s), No_Write, Right) ; RWM(Match ANY, Write s, Right) ]), init) ]
       )
-  in 
+  in Turing_Machine.export	
   { nop with
     nb_bands = 3 ;
     name = "UTM" ;

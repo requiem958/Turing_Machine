@@ -26,7 +26,7 @@ let generic_copy: symbols -> Turing_Machine.t = fun symbols ->
     Transition.foreach_symbol_of symbols (BUT B) (fun s ->
 	[ (init, Action( Simultaneous [ RWM(Match(VAL s), No_Write, Right) ; RWM(Match ANY, Write s, Right) ]), init) ]
       )
-  in 
+  in Turing_Machine.export
   { nop with
     nb_bands = 2 ;
     name = "copy_" ^ (Pretty.set Symbol.to_ascii symbols) ;
@@ -45,7 +45,7 @@ let generic_reverse: symbols -> Turing_Machine.t = fun symbols ->
     Transition.foreach_symbol_of symbols (BUT B) (fun s ->
 	[ (copy, Action( Simultaneous [ RWM (Match(VAL s), No_Write, Left) ; RWM (Match ANY, Write s, Right) ]), copy) ]
       )
-  in 
+  in Turing_Machine.export
   { nop with
     nb_bands = 2 ;
     name = "rev_" ^ (Pretty.set Symbol.to_ascii symbols) ;
@@ -59,7 +59,8 @@ let generic_reverse: symbols -> Turing_Machine.t = fun symbols ->
   
 let (xor: Turing_Machine.t) = 
   let init = nop.initial and accept = nop.accept in
-  let q = State.next_from init in	          	  
+  let q = State.next_from init
+  in Turing_Machine.export	          	  
   { nop with
     nb_bands = 2 ;
     name = "xor" ;

@@ -2,6 +2,8 @@ TODO
 ====
 
 ## Dot ouput of a TM (see. Automata)
+  - not tested
+  - File.ml missing 
 
 ## replace B by Nil ?
 

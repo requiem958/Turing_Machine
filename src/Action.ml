@@ -159,7 +159,7 @@ module Action =
                
     (* PRETTY PRINTING *)
 
-    let rec (to_ascii: t -> string) = function
+    let rec to_ascii: t -> string = function
       | Nop -> "Nop"
       | RWM(reading,writing,moving) ->
 	      let r = Reading.to_ascii reading
@@ -169,7 +169,18 @@ module Action =
 		  
       | Simultaneous actions -> Pretty.brace (String.concat "," (List.map to_ascii actions))
 
-    (* user *)
+    let rec to_dot: t -> string = function
+      | Nop -> "Nop"
+      | RWM(reading,writing,moving) ->
+	      let r = Reading.to_ascii reading
+	      and w = Writing.to_ascii writing
+	      and m = Moving.to_ascii moving 
+	      in String.concat "" [ r ; if w="" then "" else "/"^w ; ":"^m ]
+
+      | Simultaneous actions -> String.concat " & " (List.map to_dot actions)
+
+                              
+    (* USER *)
       
     let (pretty: t -> string) = fun t ->
 	  match Pretty.get_format() with
