@@ -20,14 +20,15 @@ Those constructions have been described in books but never implemented:
 
 - An [execution engine](src/Execution.ml) with an html output
 
-- An execution engine for [emulation](src/Emulator.ml) of on-the-fly transformations
+- An execution layer on top of the previous one for [emulation](src/Emulator.ml) of on-the-fly transformations
 
 - An output of the control flow graph of a Turing_Machine in a `.dot` for the free graph vizualizer software ([graphviz](https://www.graphviz.org))
 
+
+## Examples of Turing Machines
+
 - Some examples of [single-band Turing Machines](/src/Turing_Machines/TM_Basic.ml)
-
 - The known [busy beavers](/src/Turing_Machines/TM_Busy_Beaver.ml)
-
 - Some examples of [two-bands Turing Machines](src/Turing_Machines/TM_2Bands.ml)
 
 
@@ -37,7 +38,7 @@ Those constructions have been described in books but never implemented:
 
 - The run of the 4-states Busy Beaver (107 steps)
 - The run of a TM which erases the content of a vector while keeping the structure (..,..)
-- The run of its binary version operating on the 2 symbols alphabet {T,F}
+- The run of its binary version operating on the 2-symbols alphabet {T,F}
 - The run of a 2-bands Turing Machine performing the xor of two bands
 
 
