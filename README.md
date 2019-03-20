@@ -22,8 +22,7 @@ Those constructions have been (partially) described in books but never implement
 
 - An execution engine for [emulation](src/Emulator.ml) of on-the-fly transformations
 
-- An dot output to see the control flow graph of a Turing_Machine
-  ([Turing_Machine.ml](src/Turing_Machine.ml), [Dot.ml](src/lib/Dot.ml))
+- An output of the control flow graph of a Turing_Machine in a `.dot` for the free graph vizualizer software ([graphviz](https://www.graphviz.org) 
 
 - Some examples of [single-band Turing Machines](/src/Turing_Machines/TM_Basic.ml)
 
@@ -47,8 +46,11 @@ Those constructions have been (partially) described in books but never implement
 
 ### [demo/dot/](demo/dot/) contains some control flow graphs in `.dot` format
 
-- the 4-states Busy Beaver 
+- The 4-states Busy Beaver 
 
+- The xor 2-bands Turing Machine
+
+- The erase-vec 1-band Turing Machine 
 
 
 
