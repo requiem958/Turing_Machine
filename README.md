@@ -36,18 +36,18 @@ Those constructions have been (partially) described in books but never implement
 
 ### [demo/run/](demo/run/) contains html files
 
-- The run of the 4-states Busy Beaver ([107 steps](demo/run/TM_BB4_1xBand.html))
+- The run of the 4-states Busy Beaver (107 steps)
 
 - The run of a TM which erases the content of a vector while keeping the structure (..,..)
 
-- The run of its binary version operating on 
+- The run of its binary version operating on the 2 symbols alphabet {T,F}
 
 - The run of a 2-bands Turing Machine performing the xor of two bands
 
 
 ### [demo/dot/](demo/dot/) contains some control flow graphs in `.dot` format
 
-- the 4-states Busy Beaver (BB4.dot)
+- the 4-states Busy Beaver 
 
 
 
