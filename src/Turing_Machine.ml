@@ -101,27 +101,40 @@ module Instruction =
 	      (zip instructions bands)
 	)
 
+    (* INSTRUCTION ID used for creating DOT nodes *)
+      
+    let id: instruction -> string = fun instruction ->
+      match instruction with
+      | Action action -> Action.id action
+      | Call name -> name
+      | Run tm -> tm.name
+      | Seq _ -> "SEQ"
+      | Parallel _ -> "PAR"
+
       
     (* PRETTY PRINTING *)
 	
     let rec to_ascii: t -> string = fun instruction ->
-	  match instruction with
-	  | Action action -> Action.to_ascii action
-	  | Call tm_name -> tm_name
-	  | Run tm -> tm.name
-	  | Seq instructions -> Pretty.brace (String.concat " ; " (List.map to_ascii instructions))
-	  | Parallel instructions -> Pretty.bracket (String.concat " || " (List.map to_ascii instructions))
+      match instruction with
+      | Action action -> Action.to_ascii action
+      | Call tm_name -> tm_name
+      | Run tm -> tm.name
+      | Seq instructions -> Pretty.brace (String.concat " ; " (List.map to_ascii instructions))
+      | Parallel instructions -> Pretty.bracket (String.concat " || " (List.map to_ascii instructions))
 		    
     let to_html: Html.options -> instruction -> Html.cell = fun options instruction ->
 	  Html.cell options (to_ascii instruction)
-	    
-    (* user *)
+
+    let to_dot: t -> string = to_ascii      
+                              
+    (* USER *)
 
     let pretty: t -> string = fun t ->
 	  match Pretty.get_format() with
 	  | Pretty.Html  -> to_html [] t
 	  | Pretty.Ascii -> to_ascii t
-		  
+	  | Pretty.Dot   -> to_dot t
+
   end)
 
 
@@ -170,15 +183,33 @@ module Transition =
    (* PRETTY PRINTING *)
 
     let (to_ascii: t -> string) = fun (source,instruction,target) ->
-      [ Pretty.parentheses (State.to_ascii source) ; Instruction.to_ascii instruction ; Pretty.parentheses (State.to_ascii target) ]
+      [ Pretty.parentheses (State.to_ascii source)
+      ; Instruction.to_ascii instruction
+      ; Pretty.parentheses (State.to_ascii target)
+      ]
       |> (String.concat "  ")
 	    
-    let (to_ascii_many: t list -> string) = fun transitions ->
+    let to_ascii_many: t list -> string = fun transitions ->
       transitions
       |> (List.map to_ascii)
       |> (String.concat ";")
 
-    (* user *)
+    let to_dot: t -> Dot.labelled_node * Dot.transition list = fun (src,instruction,tgt) ->
+      let src_node = State.to_dot src
+      and tgt_node = State.to_dot tgt    
+      in let instruction_node  = String.concat "_" [ src_node ; Instruction.id instruction ]
+         and instruction_label = Instruction.to_dot instruction           
+         in let dot_labelled_node = (instruction_node, instruction_label) 
+            and dot_transitions = [ (src_node, "", instruction_node) ; (instruction_node, "", tgt_node) ]
+            in
+            (dot_labelled_node, dot_transitions)
+
+    let to_dot_many: t list -> Dot.labelled_node list * Dot.transition list = fun transitions ->
+      transitions 
+      |> (List.map to_dot)
+      |> (List.fold_left (fun (nodes,transitions) (n,ts) -> (n::nodes, ts @ transitions)) ([],[]))
+      
+    (* USER *)
 
     let (pretty: t -> string) = fun t ->
 	  match Pretty.get_format() with
@@ -215,21 +246,6 @@ module Turing_Machine =
 	transitions = [ (init, Seq instructions, accept) ]	    
       }
 
-    (* PRETTY PRINTING *)
-
-    let to_ascii: turing_machine -> string = fun tm -> tm.name
-
-    let to_html: Html.options -> turing_machine -> Html.content = fun _ tm -> Html.italic (to_ascii tm)
-	    
-    (* user *)
-	    
-    let pretty (* user *) : t -> string =
-      match Pretty.get_format() with
-      | Pretty.Html  -> (to_html [])
-      | Pretty.Ascii -> to_ascii
-   (* | Pretty.Dot   -> TODO *)
-
-
     (* INFORMATION on STATES of a TURING MACHINE *)
 
     let targets_of: transitions -> State.t set = fun transitions ->
@@ -238,33 +254,62 @@ module Turing_Machine =
     let sources_of: transitions -> State.t set = fun transitions ->
       MySet.union MySet.empty (List.map (fun (q,_,_) -> q) transitions)
       
-    let states_of: transitions -> State.t set = fun transitions ->
-      MySet.union (sources_of transitions) (targets_of transitions) 
-      
     let all_states_of: turing_machine -> State.t set = fun tm ->
-      MySet.union [ State.initial ; State.accept ; State.reject ] (states_of tm.transitions)
+      MySet.union (sources_of tm.transitions) (targets_of tm.transitions)
+      
+    let control_states_of: turing_machine -> State.t set = fun tm ->
+      MySet.minus (all_states_of tm) [ State.initial ; State.accept ; State.reject ]
       
     let number_of_states: turing_machine -> int = fun tm ->
       List.length (all_states_of tm)
 
       
-    (* INFORMATION on TRANSITONS of a TURING MACHINE 
-      
-    type 'state selection = 
-      | From of 'state list
-      | To   of 'state list
+    (* PRETTY PRINTING *)
 
-    let get_transitions: State.t selection -> transitions -> transitions =  fun selection transitions -> 
-      match selection with
-      | From states -> List.filter (fun (q,_,_) -> List.mem q states) transitions 
-      | To states   -> List.filter (fun (_,_,q) -> List.mem q states) transitions 
-                       *)
+    let to_ascii: turing_machine -> string = fun tm -> tm.name
+
+    let to_html: Html.options -> turing_machine -> Html.content = fun _ tm -> Html.italic (to_ascii tm)
+
+    let to_dot : turing_machine -> string = fun tm ->
+      let control_states = List.map State.to_dot (control_states_of tm)
+      and (instruction_nodes,transitions) = Transition.to_dot_many tm.transitions
+      in Dot.digraph
+           tm.name
+           [ State.to_dot tm.initial ]
+           [ State.to_dot tm.accept  ]
+           [ State.to_dot tm.reject  ]
+           control_states
+           instruction_nodes
+           transitions
+       
+      
+(* I'M HERE
+
+  let i_output_to_dot_file_named (directory:string) (filename:string) (machine:t) : File.filename =
+  File.output_in
+    (directory ^ filename,"dot")
+    (to_dot machine)
+
+ let i_output_to_dot_file (directory:string) (machine:t) : File.filename =
+  i_output_to_dot_file directory mahcine.name machine
+
+ *)
+                                                                            
+    (* user *)
+	    
+    let pretty (* user *) : t -> string =
+      match Pretty.get_format() with
+      | Pretty.Html  -> (to_html [])
+      | Pretty.Ascii -> to_ascii
+    (* | Pretty.Dot   -> Dot.to_dot_string *)
+
 
 
     (* COMPLETION of a STANDARD 1 BAND TURING MACHINE *)
 
-    let completion: Alphabet.t -> turing_machine -> turing_machine = fun alphabet tm ->
-      let states = states_of tm.transitions in
+      
+    let (* NOT TESTED *) completion: Alphabet.t -> turing_machine -> turing_machine = fun alphabet tm ->
+      let states = all_states_of tm in
       let rejecting_transitions =
         MyList.foreach_in states (fun state ->
             let transitions = List.filter (fun (src,_,_) -> src = state) tm.transitions
@@ -287,7 +332,7 @@ module Turing_Machine =
 
     (* The complementary of a deciding TM *)
       
-    let swap_accepting_status: turing_machine -> turing_machine = fun tm -> 
+    let (* NOT TESTED *) swap_accepting_status: turing_machine -> turing_machine = fun tm -> 
       { tm with 
 	name = "Comp(" ^ tm.name ^ ")" ;
 	transitions = List.map Transition.swap_accepting_status tm.transitions

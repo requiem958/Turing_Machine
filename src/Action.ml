@@ -93,6 +93,13 @@ module Action =
       | RWM(Match(pattern),_,_) -> pattern
                           
 
+    (* ACTION ID used for creating UNIQUE DOT node *)
+
+    let rec id : action -> string = function
+      | Nop -> "Nop"
+      | RWM(reading,_,_) -> Reading.to_ascii reading
+      | Simultaneous actions ->  String.concat "&" (List.map id actions)
+          
     (* ENABLED ONE ACTION on ONE BAND *)	
 
     let (is_enabled_on_this: Band.t -> action -> bool) = fun band action ->
@@ -116,7 +123,6 @@ module Action =
 	   (fun (action,band) -> is_enabled_on_this band action)
            (zip actions bands) 
         )
-          
 	    
     (* PERFORMING an action on ONE BAND *)
 	    

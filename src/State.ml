@@ -62,8 +62,6 @@ module State =
 	
     (* PRETTY PRINTING *)
 
-    (* ascii *)
-	  
     let rec to_ascii: state -> string = fun state ->
 	  match state with
 	  | Q(i) -> "Q" ^ (string_of_int i)
@@ -77,18 +75,21 @@ module State =
 			     @ (List.map string_of_int integers)
 			    )
 
-    (* html *)
-
+    let to_dot: state -> string = to_ascii
+                                
     let to_html: Html.options -> state -> Html.content = fun options state ->
 	  Html.cell
 	    (options @ [("align", Html.Option "center")])
 	    (to_ascii state)
 
+        
+        
     (* user *)
 	    
     let pretty (*USER*) : t -> string =
       match Pretty.get_format() with
       | Pretty.Html  -> (to_html [])
       | Pretty.Ascii -> to_ascii
+      | Pretty.Dot   -> to_dot
 
   end)
