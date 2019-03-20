@@ -17,11 +17,8 @@ Those constructions have been described in books but never implemented:
 ## Modules already available
 
 - Constructions for [defining Turing Machines](src/Turing_Machine.ml)
-
 - An [execution engine](src/Execution.ml) with an html output
-
 - An execution layer on top of the previous one for [emulation](src/Emulator.ml) of on-the-fly transformations
-
 - An output of the control flow graph of a Turing_Machine in a `.dot` for the free graph vizualizer software ([graphviz](https://www.graphviz.org))
 
 
@@ -32,7 +29,7 @@ Those constructions have been described in books but never implemented:
 - Some examples of [two-bands Turing Machines](src/Turing_Machines/TM_2Bands.ml)
 
 
-## Available outputs for illustration
+## Available outputs of the engines
 
 ### [demo/run/](demo/run/) contains html files
 
