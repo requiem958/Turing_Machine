@@ -6,7 +6,7 @@ Michael PÉRIN, Verimag / Univ. Grenoble-Alpes
 
 ## The TM4R project aims at developping the Turing Machine constructions
 
-Those constructions have been (partially) described in books but never implemented:
+Those constructions have been described in books but never implemented:
 
 - Emulation of a TM operating on an n-symbols alphabet by a TM operating on binary alphabet (2017)
 - The Universal Turing Machine (2019)
