@@ -1,4 +1,4 @@
-# Turing Machines for Real
+# Turing Machines for Real *(TM4R)*
 
 Michael PÉRIN, Verimag / Univ. Grenoble-Alpes
 
