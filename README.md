@@ -14,7 +14,7 @@ Those constructions have been (partially) described in books but never implement
 - The Universal Scheduler running two Turing Machine one step each (2023 ?)
 
 
-## Already available
+## Modules already available
 
 - Constructions for [defining Turing Machines](src/Turing_Machine.ml)
 
@@ -22,7 +22,7 @@ Those constructions have been (partially) described in books but never implement
 
 - An execution engine for [emulation](src/Emulator.ml) of on-the-fly transformations
 
-- An output of the control flow graph of a Turing_Machine in a `.dot` for the free graph vizualizer software ([graphviz](https://www.graphviz.org) 
+- An output of the control flow graph of a Turing_Machine in a `.dot` for the free graph vizualizer software ([graphviz](https://www.graphviz.org))
 
 - Some examples of [single-band Turing Machines](/src/Turing_Machines/TM_Basic.ml)
 
@@ -31,7 +31,7 @@ Those constructions have been (partially) described in books but never implement
 - Some examples of [two-bands Turing Machines](src/Turing_Machines/TM_2Bands.ml)
 
 
-## Available outputs
+## Available outputs for illustration
 
 ### [demo/run/](demo/run/) contains html files
 
@@ -47,9 +47,7 @@ Those constructions have been (partially) described in books but never implement
 ### [demo/dot/](demo/dot/) contains some control flow graphs in `.dot` format
 
 - The 4-states Busy Beaver 
-
 - The xor 2-bands Turing Machine
-
 - The erase-vec 1-band Turing Machine 
 
 
