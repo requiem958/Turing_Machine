@@ -1,0 +1,31 @@
+digraph cfg{
+  node [shape=plaintext]; // MACHINE NAME
+  "erase_vec" [label="erase_vec",fontname=comic,fontsize=18]
+  
+ node [shape=circle, fontsize=10]; // STATES
+  
+ node [peripheries=1, style=filled, color=black, fontcolor=white]; // INITIAL STATES
+  "Q1"
+  
+ node [peripheries=1, style=filled , color=green, fontcolor=green]; // ACCEPTING STATES
+  "Q0" [label=""]
+  
+ node [peripheries=1, style=filled, color=red  , fontcolor=white]; // REJECTING STATES
+  "Q-1" [label=""]
+  
+ node [peripheries=1, style=filled , color=gray, fontcolor=black ]; // OTHER CONTROL STATES
+  
+  
+ node [shape=box, peripheries=1, style=solid, color=blue , fontcolor=blue, fontsize=14] // INSTRUCTION NODES
+  "Q1__" [label="_:H"] ;
+"Q1_{0,1}" [label="{0,1}/_:R"] ;
+"Q1_{(,#,)}" [label="{(,#,)}:R"]
+  // TRANSITIONS
+  "erase_vec" -> "Q1"
+  "Q1"->"Q1__"[label="",dir=none, color=blue] ;
+"Q1"->"Q1_{0,1}"[label="",dir=none, color=blue] ;
+"Q1"->"Q1_{(,#,)}"[label="",dir=none, color=blue]
+  "Q1__"->"Q0"[label=""] ;
+"Q1_{0,1}"->"Q1"[label=""] ;
+"Q1_{(,#,)}"->"Q1"[label=""]
+  }

@@ -128,7 +128,7 @@ let demo: unit -> unit = fun () ->
 	incr_decr () ;
 	gen_dup () ;
         xor () ;
-	busy_beaver TM_Busy_Beaver.bb4 
+	busy_beaver TM_Busy_Beaver.bb4  ;
         (*
 	  gen_copy () ;    
 	  gen_reverse () ;

@@ -17,7 +17,15 @@ open Pattern
 open State
 open Turing_Machine   
 
+module Bit =
+  struct
+    type t = symbol
+    let zero :t = B
+    let unit :t = T
+    let pretty : t -> string = Symbol.pretty
+  end
 
+  
 let nop : Turing_Machine.t = Turing_Machine.nop 
 
                     

@@ -552,7 +552,7 @@ end
 
 open Alphabet
 
-
+  
 let demo4: unit -> unit = fun () ->
   let loggers = [] 
   and alphabet = Alphabet.make [O;Z;S;U;C;A;T]
@@ -560,7 +560,13 @@ let demo4: unit -> unit = fun () ->
        [
          Binary_Emulator.make_simulator alphabet
        ]
-     in List.iter (fun cfg -> let _ = Simulator.log_run_using (emulators,loggers) cfg in ())
+     in List.iter
+          (fun cfg ->
+            begin 
+              let _ = Simulator.log_run_using (emulators,loggers) cfg in () ;
+              let _ = Execution.i_log_run cfg in ()
+            end
+          )
           [
             Configuration.make (TM_Basic.test_TM01)
               [ Band.make "Data" alphabet [O;Z;Z;S;Z;U;S;U;Z;S;U;U;C] ]

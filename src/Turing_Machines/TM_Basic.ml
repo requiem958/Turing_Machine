@@ -267,7 +267,7 @@ let test_TM01: Turing_Machine.t =
   let init = nop.initial and accept = nop.accept
   in Turing_Machine.export
        { nop with
-         name = "erase_vec_01" ;
+         name = "erase_vec" ;
          transitions =
            [ (init, Action(RWM( Match(IN[O;S;C]), No_Write, Right)), init) ;
              (init, Action(RWM( Match(IN[Z;U])  , Write B , Right)), init) ;
