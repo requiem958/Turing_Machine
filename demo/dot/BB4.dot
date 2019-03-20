@@ -1,0 +1,48 @@
+digraph cfg{
+  node [shape=plaintext]; // MACHINE NAME
+  "BB4_stops_after_107_steps" [label="BB4_stops_after_107_steps",fontname=comic,fontsize=18]
+  
+ node [shape=circle, fontsize=10]; // STATES
+  
+ node [peripheries=1, style=filled, color=black, fontcolor=white]; // INITIAL STATES
+  "Q1"
+  
+ node [peripheries=1, style=filled , color=green, fontcolor=green]; // ACCEPTING STATES
+  "Q0" [label=""]
+  
+ node [peripheries=1, style=filled, color=red  , fontcolor=white]; // REJECTING STATES
+  "Q-1" [label=""]
+  
+ node [peripheries=1, style=filled , color=gray, fontcolor=black ]; // OTHER CONTROL STATES
+  "Q2" ;
+"Q3" ;
+"Q4"
+  
+ node [shape=box, peripheries=1, style=solid, color=blue , fontcolor=blue, fontsize=14] // INSTRUCTION NODES
+  "Q4_T" [label="T/_:R"] ;
+"Q4__" [label="_/T:R"] ;
+"Q3_T" [label="T/T:L"] ;
+"Q3__" [label="_/T:H"] ;
+"Q2_T" [label="T/_:L"] ;
+"Q2__" [label="_/T:L"] ;
+"Q1_T" [label="T/T:L"] ;
+"Q1__" [label="_/T:R"]
+  // TRANSITIONS
+  "BB4_stops_after_107_steps" -> "Q1"
+  "Q4"->"Q4_T"[label="",dir=none, color=blue] ;
+"Q4"->"Q4__"[label="",dir=none, color=blue] ;
+"Q3"->"Q3_T"[label="",dir=none, color=blue] ;
+"Q3"->"Q3__"[label="",dir=none, color=blue] ;
+"Q2"->"Q2_T"[label="",dir=none, color=blue] ;
+"Q2"->"Q2__"[label="",dir=none, color=blue] ;
+"Q1"->"Q1_T"[label="",dir=none, color=blue] ;
+"Q1"->"Q1__"[label="",dir=none, color=blue]
+  "Q4_T"->"Q1"[label=""] ;
+"Q4__"->"Q4"[label=""] ;
+"Q3_T"->"Q4"[label=""] ;
+"Q3__"->"Q0"[label=""] ;
+"Q2_T"->"Q3"[label=""] ;
+"Q2__"->"Q1"[label=""] ;
+"Q1_T"->"Q2"[label=""] ;
+"Q1__"->"Q2"[label=""]
+  }
