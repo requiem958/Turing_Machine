@@ -1,9 +1,8 @@
 TODO
 ====
 
-## Dot ouput of a TM (see. Automata)
-  - not tested
-  - File.ml missing 
+## Map : bit_vector -> value as BDD is needded for the correct generation of the binary Turing Machine :
+/!\ lorsqu'une lecture échoue à reconnaitre le mot sur la bande il faut reculer du bon nombre de case.
 
 ## replace B by Nil ?
 
@@ -53,6 +52,8 @@ let rec (foreach_symbol_in: 'a list -> ('a -> transitions) -> transitions) = fun
 DONE
 ====
 
+### Dot ouput of a TM 
+
 ### NOT TESTED: Application d'une MT multi-bandes à un sous-ensemble de bandes
 
 - Introduire une action Run_on of band list * TM.
@@ -76,10 +77,7 @@ Pour permettre cela il faut
 ### Divers
 
 - Restructuration : Fusionner Transition + Instruction + Turing_Machine
-
 - une MT peut avoir plusieurs bandes
-
 - une configuration contient la MT, son état courant, les bandes = liste de bande
-
 - une execution peut faire tourner plusieurs machines en parrallèle
   une execution = liste de configuration = [ CMT1 ; CMT2 ; ... ]

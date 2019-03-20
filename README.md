@@ -29,7 +29,7 @@ Those constructions have been described in books but never implemented:
 - Some examples of [two-bands Turing Machines](src/Turing_Machines/TM_2Bands.ml)
 
 
-## Available outputs of the engines
+## Available engine outputs 
 
 ### [demo/run/](demo/run/) contains html files
 
