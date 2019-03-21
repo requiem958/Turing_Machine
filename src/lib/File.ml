@@ -6,7 +6,8 @@
  *
  *)
 
-
+let _VERBOSE_ = false
+              
 type name_ext = string * string
 
 let make: string -> string -> name_ext = fun name ext -> (name,ext)
@@ -27,11 +28,16 @@ let to_string: name_ext -> string = fun (name,ext) ->
 let i_output_in: name_ext -> string -> string = fun (name,ext) string ->
   let filename = to_string (name,ext)
   in let
-      channel_out = open_out filename
+      channel_out =
+      begin
+        if _VERBOSE_ then print_string ("\n\n>    creating file: " ^ filename) else () ;
+        open_out filename
+      end
     in
     begin
-      print_string (".....data written in: " ^ filename ^ "\n");
+      print_string ("\n> writting data in: " ^ filename);
       output_string channel_out string ;
       close_out channel_out ;
+      if _VERBOSE_ then print_string ("\n>     closing file: " ^ filename) else () ;
       filename
     end

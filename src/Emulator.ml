@@ -2,7 +2,7 @@
  *
  * Part of the project TURING MACHINES FOR REAL
  *
- * (PROJECT 2019)  1. Multi-Bands Turing Machines working on a an alphabet A can be simulated by a single band Turing Machine using a augmented Alphbet A'
+ * (PROJECT 2019)  1. Multi-Bands Turng Machines working on a an alphabet A can be simulated by a single band Turing Machine using a augmented Alphbet A'
  *
  * (PROJECT 2017)  2. A Turing Machine using an alphabet A can be simulated by a Turing Machine using the binary alphabet {B,D}
  *
@@ -505,8 +505,17 @@ module Binary_Emulator = struct
                    -> make_reading_TM  encoding (source,target) word_pattern
 
 
-  let (just_move: moving  -> Instruction.t) = fun moving -> Action(RWM(Match(ANY),No_Write,moving))
+  let (just_move: moving  -> Action.t) = fun moving -> RWM(Match(ANY),No_Write,moving)
 
+                                                          
+  let remove_cancelation: Action.t list -> Action.t list -> Action.t list = fun writes moves ->
+    let rec remove_cancelation_rec = fun writes moves ->
+      match writes,moves with
+      | w::ws, m::ms when cancelled_by w m -> remove_cancelation_rec ws ms
+      | _,_ -> (List.rev writes,moves)
+    in
+    let (writes,moves) = remove_cancelation_rec (List.rev writes) moves
+    in writes @ moves
        
   let (emulate_action_wrt: encoding -> State.t * Action.t * State.t -> Turing_Machine.t) = fun encoding (_,action,_) ->
     let istate = State.next_from State.initial
@@ -522,16 +531,20 @@ module Binary_Emulator = struct
                let write_symbols = (encode_symbol_wrt encoding symbol) |> List.rev
                and write_moves   = (MyList.make (encoding.nb_bits -1) Left ) @ [Here]
                in List.map
-                    (fun (symbol,move) -> Action(RWM(Match(ANY),Write(symbol),move)))
+                    (fun (symbol,move) -> RWM(Match(ANY),Write(symbol),move))
                     (MyList.zip write_symbols write_moves)
           and moves = match moving with
             | Here -> []
             | _ -> MyList.make encoding.nb_bits (just_move moving)
           in 
           let read_transitions = emulate_reading_wrt encoding (State.initial,istate) reading
-          and write_move_transition =  (istate, Seq (writes @ moves), State.accept)
-          in
-          { Turing_Machine.nop with transitions = read_transitions @ [ write_move_transition ] }
+          and write_move_actions = List.map (fun a -> Action a) (remove_cancelation writes moves)
+          in let write_move_transition =  (istate, Seq (write_move_actions), State.accept)
+             in Turing_Machine.export
+                  { Turing_Machine.nop with
+                    name = "Binary_" ^ (Action.to_ascii action) ;
+                    transitions = read_transitions @ [ write_move_transition ]
+                  }
 
           
   let make_simulator : Alphabet.t -> simulator = fun alphabet ->
@@ -563,8 +576,9 @@ let demo4: unit -> unit = fun () ->
      in List.iter
           (fun cfg ->
             begin 
-              let _ = Simulator.log_run_using (emulators,loggers) cfg in () ;
-              let _ = Execution.i_log_run cfg in ()
+              let _ = Simulator.log_run_using (emulators,loggers) cfg in ()
+              ;
+(*                                           let _ = Execution.i_log_run cfg in () *)
             end
           )
           [

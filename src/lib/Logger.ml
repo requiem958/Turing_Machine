@@ -45,6 +45,7 @@ module Indent =
 
 (* LOGGER as object to allow multiple active logs in different files *)
 
+  let _VERBOSE_ = false 
    
 class logger = fun (opt_name: string option) ->
       object(self)
@@ -62,7 +63,11 @@ class logger = fun (opt_name: string option) ->
 	  channel <-
 	    (match opt_filename with
 	    | None -> stdout
-	    | Some filename -> open_out filename
+	    | Some filename ->
+               begin
+                 if _VERBOSE_ then print_string ("\n\n#  creating file: " ^ filename) else () ;
+                 open_out filename
+               end
 	    )
 
 	method print: string -> unit = fun string ->
@@ -77,9 +82,18 @@ class logger = fun (opt_name: string option) ->
 	  begin
 	    (match opt_filename with
 	    | None -> ()
-	    | Some filename -> self#print_msg ("\n\n.... data logged in: " ^ filename ^ "\n")
-	    ) ;
+	    | Some filename
+              -> print_string ("\n# data logged in: " ^ filename)
+	    )
+            ;
 	    close_out channel
+            ;
+            if _VERBOSE_ then 
+              (match opt_filename with
+	       | None -> ()
+	       | Some filename -> print_string ("\n#   closing file: " ^ filename) ;  
+	      )
+            else ()
 	  end
 
       end

@@ -6,19 +6,29 @@
  *
  *)
 
-  
+
+let execute: (unit -> 't) -> unit = fun f ->  let _ = f () in () ;;
+
 (* DEMO *)
 
-let _ = Demo.demo ()
+begin
+  print_string("\nEXECUTING main.ml") ;
 
-let _ = UTM.demo()
-      
+  execute Emulator.demo ;
+        
 (*
 
-let _ = Emulator.demo ()
+execute UTM.demo ;
 
-let _ = LC_by_MT.demo ()       
+execute Demo.demo ;
 
-let _ = Exercise.demo() 
+execute Emulator.demo ;
+
+execute LC_by_MT.demo ;
+
+execute Exercise.demo ;
 
 *)
+
+  print_string("\nEND of main.ml \n") ;
+end

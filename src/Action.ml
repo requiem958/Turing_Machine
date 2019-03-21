@@ -74,7 +74,12 @@ module Moving =
       | Left  -> "L"
       | Here  -> "H"
       | Right -> "R"
-		
+
+    let cancelled_by: t -> t -> bool = fun m1 m2 ->
+      match m1, m2 with
+      | Here, Here | Left, Right | Right, Left -> true
+      | _ -> false
+         
   end)
 
     
@@ -156,7 +161,19 @@ module Action =
 	(fun (action,band) -> perform_on_one_band action band)
 	(zip actions bands)
 
-               
+
+    (* OPTIMIZATION: is act1 cancelled_by act2 ? *)
+      
+    let cancelled_by: t -> t -> bool = fun act1 act2 ->
+      match act1, act2 with
+      | RWM(Match(ANY),No_Write,m1) ,RWM(Match(ANY),No_Write,m2) -> Moving.cancelled_by m1 m2
+     (*      
+      | RWM(Match(VAL s1), Write s2,Here), RWM(Match(VAL s_1),Write s_2, Here) -> s_1=s2 && s_2=s1
+      | RWM(Match(VAL s1), Write s2,Here), RWM(Match(ANY),Write s_2, Here) -> s_2=s1
+      *)
+      | _ -> false
+        
+      
     (* PRETTY PRINTING *)
 
     let rec to_ascii: t -> string = function
@@ -167,7 +184,7 @@ module Action =
 	      and m = Moving.to_ascii moving 
 	      in String.concat "" [ r ; if w="" then "" else "\\"^w ; ":"^m ]
 		  
-      | Simultaneous actions -> Pretty.brace (String.concat "," (List.map to_ascii actions))
+      | Simultaneous actions -> Pretty.brace (String.concat "&" (List.map to_ascii actions))
 
     let rec to_dot: t -> string = function
       | Nop -> "Nop"

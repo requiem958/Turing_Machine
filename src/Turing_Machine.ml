@@ -119,8 +119,8 @@ module Instruction =
       | Action action -> Action.to_ascii action
       | Call tm_name ->  tm_name
       | Run tm       ->  tm.name
-      | Seq instructions -> Pretty.brace (String.concat " ; " (List.map to_ascii instructions))
-      | Parallel instructions -> Pretty.bracket (String.concat " || " (List.map to_ascii instructions))
+      | Seq instructions -> "SEQ" ^ (Pretty.brace (String.concat " ; " (List.map to_ascii instructions)))
+      | Parallel instructions -> String.concat " || " (List.map to_ascii instructions)
 		    
     let to_html: Html.options -> instruction -> Html.cell = fun options instruction ->
       Html.cell options (to_ascii instruction)
@@ -130,8 +130,8 @@ module Instruction =
       | Action action -> Action.to_dot action
       | Call tm_name -> String.concat "" ["run(" ; tm_name ; ")" ]
       | Run tm       -> String.concat "" ["run(" ; tm.name ; ")" ]
-      | Seq instructions -> Pretty.brace (String.concat " ; " (List.map to_dot instructions))
-      | Parallel instructions ->String.concat " || " (List.map to_dot instructions)
+      | Seq instructions -> "SEQ" ^ (Pretty.brace (String.concat " ; " (List.map to_dot instructions)))
+      | Parallel instructions -> String.concat " || " (List.map to_dot instructions)
 
     (* USER *)
 
