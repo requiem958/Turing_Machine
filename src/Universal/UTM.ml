@@ -160,6 +160,9 @@ let decr_code: machine_code =
     O;Std;Z;Z;U;C ; U ; U ; L ; O;Std;U;U;U;C;
 
     O;Std;U;U;U;C ; B ; Z ; L ; O;Std;U;Z;U;C;
+
+    O;Std;U;Z;U;C ; Z ; U ; L ; O;Std;U;Z;U;C;
+    O;Std;U;Z;U;C ; B ; B ; R ; O;Std;Z;U;C;
   ]
   in  ("m_decr", code)
 
@@ -181,15 +184,16 @@ let utm: Turing_Machine.t =
   let std1 = State.fresh_from init
   in
   let macros_transitions =
-    Transition.foreach_symbol_of Alphabet.utm.symbols (IN [O;Std;Acc;Exc;Z;U]) (fun s ->
-	[ (init, Action( Simultaneous [ Nop ; RWM(Match(VAL s), No_Write, Right) ; RWM(Match ANY, Write s, Right) ]), init) ]
+    Transition.foreach_symbol_of Alphabet.utm.symbols (IN [O;Std;Acc;Exc;Z;U])
+      (fun s ->
+         [ (init, Action( Simultaneous [ Nop ; RWM(Match(VAL s), No_Write, Right) ; RWM(Match ANY, Write s, Right) ]), init) ]
       )
   in Turing_Machine.export
-  { nop with
-    nb_bands = 3 ;
-    name = "UTM" ;
-    transitions =
-      macros_transitions  @
+    { nop with
+      nb_bands = 3 ;
+      name = "UTM" ;
+      transitions =
+        macros_transitions  @
         [
           (init, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; RWM(Match ANY, Write C, Right)]), std1) ;
           (std1, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ], accept)
