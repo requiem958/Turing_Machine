@@ -156,7 +156,7 @@ let decr_code: machine_code =
     O;Std;Z;Z;U;C ; B ; B ; L ; O;Std;Z;U;U;C;
     O;Std;Z;U;U;C ; B ; B ; L ; O;Std;U;Z;U;C;
 
-    O:Std:Z;Z;U;C ; Z ; Z ; L ; O;Std;U;U;U;C;
+    O;Std;Z;Z;U;C ; Z ; Z ; L ; O;Std;U;U;U;C;
     O;Std;Z;Z;U;C ; U ; U ; L ; O;Std;U;U;U;C;
 
     O;Std;U;U;U;C ; B ; Z ; L ; O;Std;U;Z;U;C;
@@ -181,24 +181,65 @@ let decr_code: machine_code =
 let utm: Turing_Machine.t =
   let init = nop.initial in
   let accept = nop.accept in
-  let std1 = State.fresh_from init
-  in
+  let reject = nop.reject in
+  let std1 = State.fresh_from init in
+
+  let chEtatD = State.fresh_from init in
+  let chEtat1 = State.fresh_from init in
+  let chEtat2 = State.fresh_from init in
+  let chEtatR = State.fresh_from init in
+  let chEtatA = State.fresh_from init in
+  let rechTransD = State.fresh_from init in
+  let rechTrans1 = State.fresh_from init
+  in (*
   let macros_transitions =
     Transition.foreach_symbol_of Alphabet.utm.symbols (IN [O;Std;Acc;Exc;Z;U])
       (fun s ->
-         [ (init, Action( Simultaneous [ Nop ; RWM(Match(VAL s), No_Write, Right) ; RWM(Match ANY, Write s, Right) ]), init) ]
-      )
+         [(init,Action(Simultaneous[Nop ;RWM(Match(VAL s), No_Write, Right) ;RWM(Match ANY, Write s, Right)]),init)]
+  ) *)
+  let chEtat_transitions =
+          [
+            (chEtatD, Action(Simultaneous [Nop; RWM(Match (VAL Acc), No_Write,Right); Nop]), accept);
+            (chEtatD, Action(Simultaneous [Nop; RWM(Match (VAL Exc), No_Write,Right); Nop]), reject);
+            (chEtatD, Action(Simultaneous [Nop; RWM(Match (VAL Std), No_Write,Right); Nop]), chEtat1);
+
+            (chEtat1, Action(Simultaneous [Nop; RWM(Match (BUT S), No_Write,Right); Nop]), reject);
+            (chEtat1, Action(Simultaneous [Nop; RWM(Match (VAL S), No_Write,Right); Nop]), chEtat2);
+
+            (chEtat2, Action(Simultaneous[Nop; RWM(Match (VAL Z), No_Write, Right); RWM(Match ANY, Write Z,Right)]), chEtat2);
+            (chEtat2, Action(Simultaneous[Nop; RWM(Match (VAL U), No_Write, Right); RWM(Match ANY, Write U,Right)]), chEtat2);
+            (chEtat2, Action(Simultaneous[Nop; RWM(Match (VAL C), No_Write, Here); Nop]), chEtatR);
+
+            (chEtatR, Run_on(TM_Basic.left_most, [3]), chEtatA)
+          ]
+    in
+    let rechTrans_transitions =
+          [
+            (rechTransD, Seq[ Action(Simultaneous [Nop;RWM(Match ANY,No_Write, Right);Nop]) ;
+                              Action(Simultaneous [Nop;RWM(Match ANY,No_Write, Right);Nop]) ;
+                              Action(Simultaneous [Nop;RWM(Match ANY,No_Write, Right);Nop]) ], rechTrans1);
+
+            (rechTrans1, Action(Nop), cmpEtatD);
+            (cmpEtatA, Action(Simultaneous [Nop;RWM(Match ANY,No_Write, Right);Nop]), cmpReadD);
+            (cmpEtatE, Action(Nop), prchTransD);
+
+            (cmpReadA, Action(Simultaneous [Nop;RWM(Match ANY,No_Write, Right);Nop]), excTransD);
+            (cmpReadE, Action(Nop), prchTransD);
+
+            (prchTransA, Action(Nop), rechTransD)
+          ]
   in Turing_Machine.export
     { nop with
       nb_bands = 3 ;
       name = "UTM" ;
-      transitions =
-        macros_transitions  @
+      transitions = []
+        (* macros_transitions  @
         [
           (init, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; RWM(Match ANY, Write C, Right)]), std1) ;
           (std1, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ], accept)
           (* ... à compléter ... *)
         ]
+        *)
   }
 
 
@@ -211,6 +252,15 @@ let run_UTM_on: machine_code -> data -> Configuration.t = fun interpretable_m w 
   and band3 = Band.make "State" Alphabet.utm []
   in
   let cfg = Configuration.make utm [ band1 ; band2 ; band3 ]
+  in
+  Execution.i_log_run cfg
+
+let run_TM_on_three_bands:  Turing_Machine.t -> data-> data-> data -> Configuration.t = fun interpretable_m w1 w2 w3 ->
+  let band1 = Band.make "Data" Alphabet.zero_unit  w1
+  and band2 = Band.make interpretable_m.name Alphabet.utm  w2
+  and band3 = Band.make "State" Alphabet.zero_unit w3
+  in
+  let cfg = Configuration.make  interpretable_m [ band1 ; band2 ; band3 ]
   in
   Execution.i_log_run cfg
 
@@ -234,6 +284,7 @@ let demo: unit -> unit = fun () ->
     print_string "\n\n* DEMO * UTM.ml:\n\n" ;
     List.iter (fun _ -> ())
       [ run_TM_on neg_TM [U;Z;Z;U] ;
+        run_TM_on_three_bands changeEtat [] [Std;S;Z;U;U;C] [];
         run_UTM_on neg_code [U;Z;Z;U] ;
         (* ... à compléter ... *)
       ]
