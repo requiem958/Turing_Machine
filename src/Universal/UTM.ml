@@ -201,13 +201,16 @@ let utm: Turing_Machine.t =
   let cmpEtatE_r = State.fresh_from std1
   let cmpEtatA = State.fresh_from std1
   let cmpEtatE = State.fresh_from std1
-
+  
+(* 
   in
-  (* let macros_transitions =
+  let macros_transitions =
     Transition.foreach_symbol_of Alphabet.utm.symbols (IN [O;Std;Acc;Exc;Z;U])
       (fun s ->
          [ (init, Action( Simultaneous [ Nop ; RWM(Match(VAL s), No_Write, Right) ; RWM(Match ANY, Write s, Right) ]), init) ]
       ) *)
+
+  in
   let excTrans_transitions = [
   		(excTransD, Action( Simultaneous [ RWM(Match ANY, Write Z, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ], excTrans_m) ;
         (excTransD, Action( Simultaneous [ RWM(Match ANY, Write U, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ], excTrans_m) ;
@@ -219,6 +222,7 @@ let utm: Turing_Machine.t =
   ]
 
   (* Penser à rembobiner au tout début *)
+  in
   let prchTrans_transitions = [
   		(prchTransD, Action( Simultaneous [ Nop ; RWM(Match(OUT C B), No_Write, Right) ; Nop ] ), prchTransD) ;
   		(prchTransD, Action( Simultaneous [ Nop ; RWM(Match(VAL B), No_Write, Here) ; Nop ] ), reject) ;
@@ -229,6 +233,7 @@ let utm: Turing_Machine.t =
   ]
 
   (* Commence à R *)
+  in
   let cmpRead_transitions = [
   		(cmpReadD, Action( Simultaneous [ RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), cmpReadA) ;
   		(cmpReadD, Action( Simultaneous [ RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), cmpReadA) ;
@@ -239,6 +244,7 @@ let utm: Turing_Machine.t =
   ]
 
   (* Commence au début de l'état sur B2 *)
+  in
   let cmpEtat_transitions = [
   		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL Z), No_Write, Right) ; RWM(Match(VAL Z), No_Write, Right) ] ), cmpEtatD) ;
   		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL U), No_Write, Right) ; RWM(Match(VAL U), No_Write, Right) ] ), cmpEtatD) ;
