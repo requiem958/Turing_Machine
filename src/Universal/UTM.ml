@@ -182,26 +182,26 @@ let utm: Turing_Machine.t =
   let init = nop.initial in
   let accept = nop.accept in
   let reject = nop.reject in
-  let std1 = State.fresh_from init
+  let std1 = State.fresh_from init in
 
-  let excTransD = State.fresh_from std1
-  let excTrans_m = State.fresh_from std1
-  let excTransA = State.fresh_from std1
+  let excTransD = State.fresh_from std1 in
+  let excTrans_m = State.fresh_from std1 in
+  let excTransA = State.fresh_from std1 in
 
-  let prchTransD = State.fresh_from std1
-  let prchTrans_o = State.fresh_from std1
-  let prchTransA = State.fresh_from std1
+  let prchTransD = State.fresh_from std1 in
+  let prchTrans_o = State.fresh_from std1 in
+  let prchTransA = State.fresh_from std1 in
 
-  let cmpReadD = State.fresh_from std1
-  let cmpReadA = State.fresh_from std1
-  let cmpReadE = State.fresh_from std1
+  let cmpReadD = State.fresh_from std1 in
+  let cmpReadA = State.fresh_from std1 in
+  let cmpReadE = State.fresh_from std1 in
 
-  let cmpEtatD = State.fresh_from std1
-  let cmpEtatA_r = State.fresh_from std1
-  let cmpEtatE_r = State.fresh_from std1
-  let cmpEtatA = State.fresh_from std1
+  let cmpEtatD = State.fresh_from std1 in
+  let cmpEtatA_r = State.fresh_from std1 in
+  let cmpEtatE_r = State.fresh_from std1 in
+  let cmpEtatA = State.fresh_from std1 in
   let cmpEtatE = State.fresh_from std1
-  
+
 (* 
   in
   let macros_transitions =
