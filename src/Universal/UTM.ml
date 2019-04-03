@@ -192,7 +192,7 @@ let utm: Turing_Machine.t =
 		(Q 24, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; Nop ] ), Q 25) ;
 		(Q 25, Action( Simultaneous [ Nop ; RWM(Match(OUT [O ;B]), No_Write, Right) ; Nop ] ), Q 24) ;
 		(Q 25, Action( Simultaneous [ Nop ; RWM(Match(VAL B), No_Write, Here) ; Nop ] ), reject) ;
-		(Q 25, Action( Simultaneous [ Nop ; RWM(Match(VAL O), No_Write, Right) ; Nop ] ), Q 26)
+		(Q 25, Action( Simultaneous [ Nop ; RWM(Match(VAL O), No_Write, Right) ; Nop ] ), Q 12)
 	]
 
 	(* Commence au début du numéro d'état sur B2 *)
@@ -206,20 +206,20 @@ let utm: Turing_Machine.t =
 		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL U), No_Write, Here) ] ), Q 6) ;
 		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Here) ; RWM(Match(BUT B), No_Write, Here) ] ), Q 6) ;
 		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(BUT C), No_Write, Here) ; RWM(Match(VAL B), No_Write, Left) ] ), Q 6) ;
-		(Q 5, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], Q 7) ;
-		(Q 6, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], Q 8)
+		(Q 5, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], Q 9) ;
+		(Q 6, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], Q 24)
 	]
 
 	(* Commence sur R *)
 	(* Finit sur W *)
 	in
 	let cmpRead_transitions = [
-		(Q 9, Action( Simultaneous [ RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 10) ;
-		(Q 9, Action( Simultaneous [ RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 10) ;
-		(Q 9, Action( Simultaneous [ RWM(Match(VAL B), No_Write, Here) ; RWM(Match(VAL D), No_Write, Right) ; Nop ] ), Q 10) ;
-		(Q 9, Action( Simultaneous [ RWM(Match(BUT Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 11) ;
-		(Q 9, Action( Simultaneous [ RWM(Match(BUT U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 11) ;
-		(Q 9, Action( Simultaneous [ RWM(Match(BUT B), No_Write, Here) ; RWM(Match(VAL D), No_Write, Right) ; Nop ] ), Q 11)
+		(Q 9, Action( Simultaneous [ RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 14) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 14) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(VAL B), No_Write, Here) ; RWM(Match(VAL D), No_Write, Right) ; Nop ] ), Q 14) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(BUT Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 24) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(BUT U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 24) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(BUT B), No_Write, Here) ; RWM(Match(VAL D), No_Write, Right) ; Nop ] ), Q 24)
 	]
 
 	(* Commence sur Std *)
@@ -227,14 +227,6 @@ let utm: Turing_Machine.t =
 	in
 	let rechTrans_transitions = [
     (Q 12, Action(Simultaneous [Nop; RWM(Match ANY, No_Write, Right); Nop]), Q 4);
-
-    (Q 7, Action(Simultaneous [Nop; Nop; Nop]), Q 9);
-    (Q 8, Action(Simultaneous [Nop; Nop; Nop]), Q 24);
-
-    (Q 10, Action(Simultaneous [Nop; Nop; Nop]), Q 13);
-    (Q 11, Action(Simultaneous [Nop; Nop; Nop]), Q 24);
-
-    (Q 26, Action(Simultaneous [Nop; Nop; Nop]), Q 12)
 	]
 
 	(* Commence sur W *)
@@ -269,7 +261,6 @@ let utm: Turing_Machine.t =
 	in
 	let loop_transitions = [
 		(Q 22, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), Q 12) ;
-		(Q 13, Action( Simultaneous [ Nop ; Nop ; Nop ] ), Q 14) ;
 		(Q 16, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), Q 17) ;
 		(Q 21, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Action(Nop) ], Q 22)
 	]
