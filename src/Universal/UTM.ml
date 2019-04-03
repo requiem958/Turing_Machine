@@ -212,7 +212,7 @@ let utm: Turing_Machine.t =
 	let chEtatR = State.fresh_from std1 in
 	let chEtatA = State.fresh_from std1 in
 
-	let loopD = State.fresh_from std1 in
+	let loopD = State.fresh_from std1
 
 	(* Penser à rembobiner au tout début *)
 	(* Finit sur Std *)
@@ -305,12 +305,12 @@ let utm: Turing_Machine.t =
 		(loopD, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), rechTransD) ;
 		(rechTransA, Action( Simultaneous [ Nop ; Nop ; Nop ] ), excTransD) ;
 		(excTransA, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), chEtatD) ;
-		(chEtatA, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Action(Nop) ], loopD) 
+		(chEtatA, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Action(Nop) ], loopD)
 	]
 
 	in
 	let init_transitions = [
-		(init, Parallel [ Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ; Nop ], std1) ;
+		(init, Parallel [ Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ; Action(Nop) ], std1) ;
 		(std1, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), chEtatD)
 	]
 

@@ -16,10 +16,11 @@ begin
 
   execute Emulator.demo ;
         
-(*
+
 
 execute UTM.demo ;
 
+(*
 execute Demo.demo ;
 
 execute Emulator.demo ;
