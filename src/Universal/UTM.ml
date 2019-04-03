@@ -185,34 +185,34 @@ let utm: Turing_Machine.t =
 	let std1 = State.fresh_from init in
 
 	let prchTransD = State.fresh_from std1 in
-	let prchTrans_o = State.fresh_from std1 in
-	let prchTransA = State.fresh_from std1 in
+	let prchTrans_o = State.fresh_from prchTransD in
+	let prchTransA = State.fresh_from prchTrans_o in
 
-	let cmpEtatD = State.fresh_from std1 in
-	let cmpEtatA_r = State.fresh_from std1 in
-	let cmpEtatE_r = State.fresh_from std1 in
-	let cmpEtatA = State.fresh_from std1 in
-	let cmpEtatE = State.fresh_from std1 in
+	let cmpEtatD = State.fresh_from prchTransA in
+	let cmpEtatA_r = State.fresh_from cmpEtatD in
+	let cmpEtatE_r = State.fresh_from cmpEtatA_r in
+	let cmpEtatA = State.fresh_from cmpEtatE_r in
+	let cmpEtatE = State.fresh_from cmpEtatA in
 
-	let cmpReadD = State.fresh_from std1 in
-	let cmpReadA = State.fresh_from std1 in
-	let cmpReadE = State.fresh_from std1 in
+	let cmpReadD = State.fresh_from cmpEtatE in
+	let cmpReadA = State.fresh_from cmpReadD in
+	let cmpReadE = State.fresh_from cmpReadA in
 
-	let rechTransD = State.fresh_from std1 in
-	let rechTrans1 = State.fresh_from std1 in
-	let rechTransA = State.fresh_from std1 in
+	let rechTransD = State.fresh_from cmpReadE in
+	let rechTrans1 = State.fresh_from rechTransD in
+	let rechTransA = State.fresh_from rechTrans1 in
 
-	let excTransD = State.fresh_from std1 in
-	let excTrans_m = State.fresh_from std1 in
-	let excTransA = State.fresh_from std1 in
+	let excTransD = State.fresh_from rechTransA in
+	let excTrans_m = State.fresh_from excTransD in
+	let excTransA = State.fresh_from excTrans_m in
 
-	let chEtatD = State.fresh_from std1 in
-	let chEtat1 = State.fresh_from std1 in
-	let chEtat2 = State.fresh_from std1 in
-	let chEtatR = State.fresh_from std1 in
-	let chEtatA = State.fresh_from std1 in
+	let chEtatD = State.fresh_from excTransA in
+	let chEtat1 = State.fresh_from chEtatD in
+	let chEtat2 = State.fresh_from chEtat1 in
+	let chEtatR = State.fresh_from chEtat2 in
+	let chEtatA = State.fresh_from chEtatR in
 
-	let loopD = State.fresh_from std1
+	let loopD = State.fresh_from chEtatA
 
 	(* Penser à rembobiner au tout début *)
 	(* Finit sur Std *)
