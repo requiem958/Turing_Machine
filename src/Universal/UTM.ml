@@ -147,22 +147,22 @@ let decr_code: machine_code =
   let code = [
     O;Std;Z;C ; Z ; Z ; R ; O;Std;U;C;
     O;Std;Z;C ; U ; Z ; H ; O;Acc;Z;U;C;
-    O;Std;Z;C ; B ; B ; H ; O;Exc;U;U;C;
+    O;Std;Z;C ; D ; D ; H ; O;Exc;U;U;C;
 
-    O;Std;U;C ; B ; B ; L ; O;Exc;U;U;C;
+    O;Std;U;C ; D ; D ; L ; O;Exc;U;U;C;
     O;Std;U;C ; Z ; Z ; R ; O;Std;U;C;
-    O;Std;U;C ; U ; B ; R ; O;Std;Z;Z;U;C;
+    O;Std;U;C ; U ; D ; R ; O;Std;Z;Z;U;C;
 
-    O;Std;Z;Z;U;C ; B ; B ; L ; O;Std;Z;U;U;C;
-    O;Std;Z;U;U;C ; B ; B ; L ; O;Std;U;Z;U;C;
+    O;Std;Z;Z;U;C ; D ; D ; L ; O;Std;Z;U;U;C;
+    O;Std;Z;U;U;C ; D ; D ; L ; O;Std;U;Z;U;C;
 
     O;Std;Z;Z;U;C ; Z ; Z ; L ; O;Std;U;U;U;C;
     O;Std;Z;Z;U;C ; U ; U ; L ; O;Std;U;U;U;C;
 
-    O;Std;U;U;U;C ; B ; Z ; L ; O;Std;U;Z;U;C;
+    O;Std;U;U;U;C ; D ; Z ; L ; O;Std;U;Z;U;C;
 
     O;Std;U;Z;U;C ; Z ; U ; L ; O;Std;U;Z;U;C;
-    O;Std;U;Z;U;C ; B ; B ; R ; O;Std;Z;U;C;
+    O;Std;U;Z;U;C ; D ; D ; R ; O;Acc;Z;U;C;
   ]
   in  ("m_decr", code)
 
@@ -216,10 +216,10 @@ let utm: Turing_Machine.t =
 	let cmpRead_transitions = [
 		(Q 9, Action( Simultaneous [ RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 10) ;
 		(Q 9, Action( Simultaneous [ RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 10) ;
-		(Q 9, Action( Simultaneous [ RWM(Match(VAL B), No_Write, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ] ), Q 10) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(VAL B), No_Write, Here) ; RWM(Match(VAL D), No_Write, Right) ; Nop ] ), Q 10) ;
 		(Q 9, Action( Simultaneous [ RWM(Match(BUT Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 11) ;
 		(Q 9, Action( Simultaneous [ RWM(Match(BUT U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 11) ;
-		(Q 9, Action( Simultaneous [ RWM(Match(BUT B), No_Write, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ] ), Q 11)
+		(Q 9, Action( Simultaneous [ RWM(Match(BUT B), No_Write, Here) ; RWM(Match(VAL D), No_Write, Right) ; Nop ] ), Q 11)
 	]
 
 	(* Commence sur Std *)
@@ -229,10 +229,10 @@ let utm: Turing_Machine.t =
     (Q 12, Action(Simultaneous [Nop; RWM(Match ANY, No_Write, Right); Nop]), Q 4);
 
     (Q 7, Action(Simultaneous [Nop; Nop; Nop]), Q 9);
-    (Q 8, Action(Simultaneous [Nop; Nop; Nop]), Q 1);
+    (Q 8, Action(Simultaneous [Nop; Nop; Nop]), Q 24);
 
     (Q 10, Action(Simultaneous [Nop; Nop; Nop]), Q 13);
-    (Q 11, Action(Simultaneous [Nop; Nop; Nop]), Q 1);
+    (Q 11, Action(Simultaneous [Nop; Nop; Nop]), Q 24);
 
     (Q 26, Action(Simultaneous [Nop; Nop; Nop]), Q 12)
 	]
@@ -243,8 +243,7 @@ let utm: Turing_Machine.t =
 	let excTrans_transitions = [
 		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write Z, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ]), Q 15) ;
 		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write U, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ]), Q 15) ;
-		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write B, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ]), Q 15) ;
-		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write B, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ]), Q 15) ;
+		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write B, Here) ; RWM(Match(VAL D), No_Write, Right) ; Nop ]), Q 15) ;
 		(Q 15, Action( Simultaneous [ RWM(Match ANY, No_Write, Left) ; RWM(Match(VAL L), No_Write, Right) ; Nop ]), Q 16) ;
 		(Q 15, Action( Simultaneous [ RWM(Match ANY, No_Write, Right) ; RWM(Match(VAL R), No_Write, Right) ; Nop ]), Q 16) ;
 		(Q 15, Action( Simultaneous [ RWM(Match ANY, No_Write, Here) ; RWM(Match(VAL H), No_Write, Right) ; Nop ]), Q 16)
@@ -256,7 +255,9 @@ let utm: Turing_Machine.t =
 	let chEtat_transitions = [
     (Q 17, Action(Simultaneous [Nop; RWM(Match(VAL Acc), No_Write, Right); Nop]), accept);
     (Q 17, Action(Simultaneous [Nop; RWM(Match(VAL Exc), No_Write, Right); Nop]), reject);
-    (Q 17, Action(Simultaneous [Nop; RWM(Match(VAL Std), No_Write, Right); Nop]), Q 19);
+    (Q 17, Action(Simultaneous [Nop; RWM(Match(VAL Std), No_Write, Right); Nop]), Q 30);
+
+    (Q 30, Parallel [ Action(Nop); Action(Nop); Run(TM_Basic.erase)], Q 19);
 
     (Q 19, Action(Simultaneous[Nop; RWM(Match(VAL Z), No_Write, Right); RWM(Match ANY, Write Z, Right)]), Q 19);
     (Q 19, Action(Simultaneous[Nop; RWM(Match(VAL U), No_Write, Right); RWM(Match ANY, Write U, Right)]), Q 19);
@@ -351,9 +352,9 @@ let demo: unit -> unit = fun () ->
     print_string "\n\n* DEMO * UTM.ml:\n\n" ;
     List.iter (fun _ -> ())
       [ (* run_TM_on neg_TM [U;Z;Z;U] ; *)
-        run_UTM_on neg_code [U;Z;Z;U] ;
-        (* ... à compléter ... *)
-        (* run_UTM_on incr_code [Z;Z;U;U] ; *)
-        (* run_UTM_on decr_code [Z;U;U;Z] ; *)
+        (*run_UTM_on neg_code [U;Z;Z;U] ;*)
+
+        (*run_UTM_on incr_code [U;U;Z;Z] ;*)
+        run_UTM_on decr_code [Z;U;U;Z] ;
       ]
   end
