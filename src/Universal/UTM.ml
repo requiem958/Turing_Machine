@@ -181,137 +181,102 @@ let decr_code: machine_code =
 let utm: Turing_Machine.t =
 	let init = nop.initial in
 	let accept = nop.accept in
-	let reject = nop.reject in
-	let std1 = State.fresh_from init in
-
-	let prchTransD = State.fresh_from std1 in
-	let prchTrans_o = State.fresh_from prchTransD in
-	let prchTransA = State.fresh_from prchTrans_o in
-
-	let cmpEtatD = State.fresh_from prchTransA in
-	let cmpEtatA_r = State.fresh_from cmpEtatD in
-	let cmpEtatE_r = State.fresh_from cmpEtatA_r in
-	let cmpEtatA = State.fresh_from cmpEtatE_r in
-	let cmpEtatE = State.fresh_from cmpEtatA in
-
-	let cmpReadD = State.fresh_from cmpEtatE in
-	let cmpReadA = State.fresh_from cmpReadD in
-	let cmpReadE = State.fresh_from cmpReadA in
-
-	let rechTransD = State.fresh_from cmpReadE in
-	let rechTrans1 = State.fresh_from rechTransD in
-	let rechTransA = State.fresh_from rechTrans1 in
-
-	let excTransD = State.fresh_from rechTransA in
-	let excTrans_m = State.fresh_from excTransD in
-	let excTransA = State.fresh_from excTrans_m in
-
-	let chEtatD = State.fresh_from excTransA in
-	let chEtat1 = State.fresh_from chEtatD in
-	let chEtat2 = State.fresh_from chEtat1 in
-	let chEtatR = State.fresh_from chEtat2 in
-	let chEtatA = State.fresh_from chEtatR in
-
-	let loopD = State.fresh_from chEtatA
+	let reject = nop.reject
 
 	(* Penser à rembobiner au tout début *)
 	(* Finit sur Std *)
 	in
 	let prchTrans_transitions = [
-		(prchTransD, Action( Simultaneous [ Nop ; RWM(Match(OUT [C; B]), No_Write, Right) ; Nop ] ), prchTransD) ;
-		(prchTransD, Action( Simultaneous [ Nop ; RWM(Match(VAL B), No_Write, Here) ; Nop ] ), reject) ;
-		(prchTransD, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; Nop ] ), prchTrans_o) ;
-		(prchTrans_o, Action( Simultaneous [ Nop ; RWM(Match(OUT [O ;B]), No_Write, Right) ; Nop ] ), prchTransD) ;
-		(prchTrans_o, Action( Simultaneous [ Nop ; RWM(Match(VAL B), No_Write, Here) ; Nop ] ), reject) ;
-		(prchTrans_o, Action( Simultaneous [ Nop ; RWM(Match(VAL O), No_Write, Right) ; Nop ] ), prchTransA)
+		(Q 24, Action( Simultaneous [ Nop ; RWM(Match(OUT [C; B]), No_Write, Right) ; Nop ] ), Q 24) ;
+		(Q 24, Action( Simultaneous [ Nop ; RWM(Match(VAL B), No_Write, Here) ; Nop ] ), reject) ;
+		(Q 24, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; Nop ] ), Q 25) ;
+		(Q 25, Action( Simultaneous [ Nop ; RWM(Match(OUT [O ;B]), No_Write, Right) ; Nop ] ), Q 24) ;
+		(Q 25, Action( Simultaneous [ Nop ; RWM(Match(VAL B), No_Write, Here) ; Nop ] ), reject) ;
+		(Q 25, Action( Simultaneous [ Nop ; RWM(Match(VAL O), No_Write, Right) ; Nop ] ), Q 26)
 	]
 
 	(* Commence au début du numéro d'état sur B2 *)
 	(* Finit sur C et au début de B3 *)
 	in
 	let cmpEtat_transitions = [
-		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL Z), No_Write, Right) ; RWM(Match(VAL Z), No_Write, Right) ] ), cmpEtatD) ;
-		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL U), No_Write, Right) ; RWM(Match(VAL U), No_Write, Right) ] ), cmpEtatD) ;
-		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; RWM(Match(VAL B), No_Write, Left) ] ), cmpEtatA_r) ;
-		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Here) ] ), cmpEtatE_r) ;
-		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL U), No_Write, Here) ] ), cmpEtatE_r) ;
-		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Here) ; RWM(Match(BUT B), No_Write, Here) ] ), cmpEtatE_r) ;
-		(cmpEtatD, Action( Simultaneous [ Nop ; RWM(Match(BUT C), No_Write, Here) ; RWM(Match(VAL B), No_Write, Left) ] ), cmpEtatE_r) ;
-		(cmpEtatA_r, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], cmpEtatA) ;
-		(cmpEtatE_r, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], cmpEtatE)
+		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL Z), No_Write, Right) ; RWM(Match(VAL Z), No_Write, Right) ] ), Q 4) ;
+		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL U), No_Write, Right) ; RWM(Match(VAL U), No_Write, Right) ] ), Q 4) ;
+		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; RWM(Match(VAL B), No_Write, Left) ] ), Q 5) ;
+		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Here) ] ), Q 6) ;
+		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL U), No_Write, Here) ] ), Q 6) ;
+		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Here) ; RWM(Match(BUT B), No_Write, Here) ] ), Q 6) ;
+		(Q 4, Action( Simultaneous [ Nop ; RWM(Match(BUT C), No_Write, Here) ; RWM(Match(VAL B), No_Write, Left) ] ), Q 6) ;
+		(Q 5, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], Q 7) ;
+		(Q 6, Parallel [ Action(Nop) ; Action(Nop) ; Run(TM_Basic.left_most) ], Q 8)
 	]
 
 	(* Commence sur R *)
 	(* Finit sur W *)
 	in
 	let cmpRead_transitions = [
-		(cmpReadD, Action( Simultaneous [ RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), cmpReadA) ;
-		(cmpReadD, Action( Simultaneous [ RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), cmpReadA) ;
-		(cmpReadD, Action( Simultaneous [ RWM(Match(VAL B), No_Write, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ] ), cmpReadA) ;
-		(cmpReadD, Action( Simultaneous [ RWM(Match(BUT Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), cmpReadE) ;
-		(cmpReadD, Action( Simultaneous [ RWM(Match(BUT U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), cmpReadE) ;
-		(cmpReadD, Action( Simultaneous [ RWM(Match(BUT B), No_Write, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ] ), cmpReadE)
+		(Q 9, Action( Simultaneous [ RWM(Match(VAL Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 10) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(VAL U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 10) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(VAL B), No_Write, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ] ), Q 10) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(BUT Z), No_Write, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ] ), Q 11) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(BUT U), No_Write, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ] ), Q 11) ;
+		(Q 9, Action( Simultaneous [ RWM(Match(BUT B), No_Write, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ] ), Q 11)
 	]
 
 	(* Commence sur Std *)
 	(* Finit sur W *)
 	in
 	let rechTrans_transitions = [
-    (rechTransD, Action(Simultaneous [Nop; RWM(Match ANY, No_Write, Right); Nop]), cmpEtatD);
+    (Q 12, Action(Simultaneous [Nop; RWM(Match ANY, No_Write, Right); Nop]), Q 4);
 
-    (rechTrans1, Action(Simultaneous [Nop; Nop; Nop]), cmpEtatD);
-    (cmpEtatA, Action(Simultaneous [Nop; RWM(Match ANY, No_Write, Right); Nop]), cmpReadD);
-    (cmpEtatE, Action(Simultaneous [Nop; Nop; Nop]), prchTransD);
+    (Q 7, Action(Simultaneous [Nop; Nop; Nop]), Q 9);
+    (Q 8, Action(Simultaneous [Nop; Nop; Nop]), Q 1);
 
-    (cmpReadA, Action(Simultaneous [Nop; Nop; Nop]), rechTransA);
-    (cmpReadE, Action(Simultaneous [Nop; Nop; Nop]), prchTransD);
+    (Q 10, Action(Simultaneous [Nop; Nop; Nop]), Q 13);
+    (Q 11, Action(Simultaneous [Nop; Nop; Nop]), Q 1);
 
-    (prchTransA, Action(Simultaneous [Nop; Nop; Nop]), rechTransD)
+    (Q 26, Action(Simultaneous [Nop; Nop; Nop]), Q 12)
 	]
 
 	(* Commence sur W *)
 	(* Finit sur O *)
 	in
 	let excTrans_transitions = [
-		(excTransD, Action( Simultaneous [ RWM(Match ANY, Write Z, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ]), excTrans_m) ;
-		(excTransD, Action( Simultaneous [ RWM(Match ANY, Write U, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ]), excTrans_m) ;
-		(excTransD, Action( Simultaneous [ RWM(Match ANY, Write B, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ]), excTrans_m) ;
-		(excTransD, Action( Simultaneous [ RWM(Match ANY, Write B, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ]), excTrans_m) ;
-		(excTrans_m, Action( Simultaneous [ RWM(Match ANY, No_Write, Left) ; RWM(Match(VAL L), No_Write, Right) ; Nop ]), excTransA) ;
-		(excTrans_m, Action( Simultaneous [ RWM(Match ANY, No_Write, Right) ; RWM(Match(VAL R), No_Write, Right) ; Nop ]), excTransA) ;
-		(excTrans_m, Action( Simultaneous [ RWM(Match ANY, No_Write, Here) ; RWM(Match(VAL H), No_Write, Right) ; Nop ]), excTransA)
+		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write Z, Here) ; RWM(Match(VAL Z), No_Write, Right) ; Nop ]), Q 15) ;
+		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write U, Here) ; RWM(Match(VAL U), No_Write, Right) ; Nop ]), Q 15) ;
+		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write B, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ]), Q 15) ;
+		(Q 14, Action( Simultaneous [ RWM(Match ANY, Write B, Here) ; RWM(Match(VAL B), No_Write, Right) ; Nop ]), Q 15) ;
+		(Q 15, Action( Simultaneous [ RWM(Match ANY, No_Write, Left) ; RWM(Match(VAL L), No_Write, Right) ; Nop ]), Q 16) ;
+		(Q 15, Action( Simultaneous [ RWM(Match ANY, No_Write, Right) ; RWM(Match(VAL R), No_Write, Right) ; Nop ]), Q 16) ;
+		(Q 15, Action( Simultaneous [ RWM(Match ANY, No_Write, Here) ; RWM(Match(VAL H), No_Write, Right) ; Nop ]), Q 16)
 	]
 
 	(* Commence sur Std *)
 	(* Finit sur C et au début de B3 *)
 	in
 	let chEtat_transitions = [
-    (chEtatD, Action(Simultaneous [Nop; RWM(Match(VAL Acc), No_Write, Right); Nop]), accept);
-    (chEtatD, Action(Simultaneous [Nop; RWM(Match(VAL Exc), No_Write, Right); Nop]), reject);
-    (chEtatD, Action(Simultaneous [Nop; RWM(Match(VAL Std), No_Write, Right); Nop]), chEtat1);
+    (Q 17, Action(Simultaneous [Nop; RWM(Match(VAL Acc), No_Write, Right); Nop]), accept);
+    (Q 17, Action(Simultaneous [Nop; RWM(Match(VAL Exc), No_Write, Right); Nop]), reject);
+    (Q 17, Action(Simultaneous [Nop; RWM(Match(VAL Std), No_Write, Right); Nop]), Q 19);
 
-    (chEtat1, Action(Simultaneous [Nop; RWM(Match(BUT S), No_Write, Right); Nop]), reject);
-    (chEtat1, Action(Simultaneous [Nop; RWM(Match(VAL S), No_Write, Right); Nop]), chEtat2);
+    (Q 19, Action(Simultaneous[Nop; RWM(Match(VAL Z), No_Write, Right); RWM(Match ANY, Write Z, Right)]), Q 19);
+    (Q 19, Action(Simultaneous[Nop; RWM(Match(VAL U), No_Write, Right); RWM(Match ANY, Write U, Right)]), Q 19);
+    (Q 19, Action(Simultaneous[Nop; RWM(Match(VAL C), No_Write, Here); Nop]), Q 20);
 
-    (chEtat2, Action(Simultaneous[Nop; RWM(Match(VAL Z), No_Write, Right); RWM(Match ANY, Write Z, Right)]), chEtat2);
-    (chEtat2, Action(Simultaneous[Nop; RWM(Match(VAL U), No_Write, Right); RWM(Match ANY, Write U, Right)]), chEtat2);
-    (chEtat2, Action(Simultaneous[Nop; RWM(Match(VAL C), No_Write, Here); Nop]), chEtatR);
-
-    (chEtatR, Parallel [ Action(Nop); Run(TM_Basic.left_most); Action(Nop)], chEtatA)
+    (Q 20, Parallel [ Action(Nop); Action(Nop); Run(TM_Basic.left_most) ], Q 21)
 	]
 
 	in
 	let loop_transitions = [
-		(loopD, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), rechTransD) ;
-		(rechTransA, Action( Simultaneous [ Nop ; Nop ; Nop ] ), excTransD) ;
-		(excTransA, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), chEtatD) ;
-		(chEtatA, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Action(Nop) ], loopD)
+		(Q 22, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), Q 12) ;
+		(Q 13, Action( Simultaneous [ Nop ; Nop ; Nop ] ), Q 14) ;
+		(Q 16, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), Q 17) ;
+		(Q 21, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Action(Nop) ], Q 22)
 	]
 
 	in
 	let init_transitions = [
-		(init, Parallel [ Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ; Action(Nop) ], std1) ;
-		(std1, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), chEtatD)
+		(init, Parallel [ Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ; Action(Nop) ], Q 23) ;
+		(Q 23, Action( Simultaneous [ Nop ; RWM(Match ANY, No_Write, Right) ; Nop ] ), Q 17)
 	]
 
 (*
@@ -329,8 +294,8 @@ let utm: Turing_Machine.t =
 		transitions =
         (* macros_transitions  @
         [
-          (init, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; RWM(Match ANY, Write C, Right)]), std1) ;
-          (std1, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ], accept)
+          (init, Action( Simultaneous [ Nop ; RWM(Match(VAL C), No_Write, Right) ; RWM(Match ANY, Write C, Right)]), Q 23) ;
+          (Q 23, Parallel [ Action(Nop) ; Run(TM_Basic.left_most) ; Run(TM_Basic.left_most) ], accept)
           (* ... à compléter ... *)
 
         ] *)
@@ -385,11 +350,10 @@ let demo: unit -> unit = fun () ->
   begin
     print_string "\n\n* DEMO * UTM.ml:\n\n" ;
     List.iter (fun _ -> ())
-      [ run_TM_on neg_TM [U;Z;Z;U] ;
-        (*run_TM_on_three_bands changeEtat [] [Std;S;Z;U;U;C] [];*)
+      [ (* run_TM_on neg_TM [U;Z;Z;U] ; *)
         run_UTM_on neg_code [U;Z;Z;U] ;
         (* ... à compléter ... *)
-        run_UTM_on incr_code [Z;Z;U;U] ;
-        run_UTM_on decr_code [Z;U;U;Z] ;
+        (* run_UTM_on incr_code [Z;Z;U;U] ; *)
+        (* run_UTM_on decr_code [Z;U;U;Z] ; *)
       ]
   end
