@@ -70,7 +70,7 @@ let neg_code: machine_code =
   let code =
     [ O;Std;Z;C ; U ; Z ; R ; O;Std;Z;C ; (* (Std0) -U/Z:R-> (Std0) *)
       O;Std;Z;C ; Z ; U ; R ; O;Std;Z;C ; (* (Std0) -Z/U:R-> (Std0) *)
-      O;Std;Z;C ; B ; B ; H ; O;Acc;U;C   (* (Std0) -B/B:H-> (Acc1) *)
+      O;Std;Z;C ; D ; D ; H ; O;Acc;U;C   (* (Std0) -B/B:H-> (Acc1) *)
     ]
   in ("m_neg",code)
 
@@ -97,7 +97,7 @@ let incr_code: machine_code =
   let code = [
     O;Std;Z;C ; U ; Z ; R ; O;Std;Z;C ;
     O;Std;Z;C ; Z ; U ; H ; O;Acc;U;C ;
-    O;Std;Z;C ; B ; U ; H ; O;Acc;U;C
+    O;Std;Z;C ; D ; U ; H ; O;Acc;U;C
   ]
   in
   ("m_incr", code)
